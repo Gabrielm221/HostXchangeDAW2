@@ -4,29 +4,59 @@ const matchDao = require('../dao/MatchDAO');
  * @swagger
  * /criar-match:
  *   post:
- *     summary: Cria um vínculo (match) entre um viajante e um intercâmbio
- *     description: Este endpoint cria um vínculo entre um viajante e um intercâmbio, verificando a existência do usuário e do intercâmbio antes de realizar a criação. Também cria avaliações padrão para ambos.
- *     requestBody:
- *       description: Dados necessários para criar o match entre o viajante e o intercâmbio.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               idviajante:
- *                 type: integer
- *                 description: ID do viajante que está criando o match.
- *               idinterc:
- *                 type: integer
- *                 description: ID do intercâmbio para o qual o match está sendo criado.
+ *     summary: Criar um vínculo (match) entre um viajante e um intercâmbio
+ *     description: Cria um vínculo (match) entre um usuário (viajante) e um intercâmbio existente, além de criar avaliações padrão para ambos.
+ *     operationId: criarMatch
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         description: Dados para criar o match entre o viajante e o intercâmbio.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             idviajante:
+ *               type: string
+ *               description: ID do viajante.
+ *               example: "12345"
+ *             idinterc:
+ *               type: string
+ *               description: ID do intercâmbio.
+ *               example: "67890"
  *     responses:
  *       201:
- *         description: Vínculo criado com sucesso entre o viajante e o intercâmbio, com avaliações padrão criadas.
+ *         description: Vínculo (match) criado com sucesso e avaliações padrão criadas.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Match criado com sucesso!'
  *       404:
  *         description: Usuário ou intercâmbio não encontrado.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Usuário não encontrado.'
  *       500:
- *         description: Erro ao criar vínculo ou avaliações.
+ *         description: Erro ao criar vínculo e avaliações.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao criar vínculo e avaliações.'
  */
 const criarMatch = async (req, res) => {
   const { idviajante, idinterc } = req.body;

@@ -19,28 +19,50 @@ function geraCodigo() {
  * @swagger
  * /login:
  *   post:
- *     summary: Efetuar login de um usuário
- *     description: Realiza o login de um usuário utilizando o email e a senha. Caso as credenciais estejam corretas, inicia uma sessão.
+ *     summary: Realizar login
+ *     description: Efetua o login do usuário utilizando e-mail e senha.
+ *     operationId: login
  *     parameters:
  *       - name: email
  *         in: body
  *         required: true
- *         description: Email do usuário
+ *         description: E-mail do usuário.
  *         schema:
  *           type: string
+ *           format: email
  *       - name: password
  *         in: body
  *         required: true
- *         description: Senha do usuário
+ *         description: Senha do usuário.
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Login efetuado com sucesso
- *       500:
- *         description: Erro ao verificar usuário ou senha
- *       401:
- *         description: Usuário não existe ou senha incorreta
+ *         description: Login realizado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Login efetuado com sucesso!'
+ *             user:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       400:
+ *         description: Falha no login, credenciais incorretas ou usuário inexistente.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Usuário não existe!' ou 'Senha incorreta!'
  */
 const login = (req, res) => {
   const { email, password } = req.body;
@@ -82,24 +104,42 @@ const login = (req, res) => {
 
 /**
  * @swagger
- * /reset-password:
+ * /enviar-email:
  *   post:
  *     summary: Enviar e-mail para redefinir senha
- *     description: Envia um código para o e-mail do usuário para redefinir a senha. O código é gerado e enviado por e-mail.
+ *     description: Envia um código de redefinição de senha para o e-mail do usuário.
+ *     operationId: enviarEmail
  *     parameters:
  *       - name: email
  *         in: body
  *         required: true
- *         description: Email do usuário para o qual o código será enviado
+ *         description: E-mail do usuário.
  *         schema:
  *           type: string
+ *           format: email
  *     responses:
  *       200:
- *         description: E-mail de redefinição enviado com sucesso
- *       500:
- *         description: Erro ao enviar e-mail de redefinição
- *       404:
- *         description: Usuário não encontrado
+ *         description: E-mail enviado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'E-mail de redefinição enviado com sucesso!'
+ *       400:
+ *         description: Usuário não encontrado ou erro ao processar a solicitação.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Usuário não existe!' ou 'Erro ao verificar usuário!'
  */
 const enviarEmail = (req, res) => {
   const { email } = req.body;
@@ -114,7 +154,7 @@ const enviarEmail = (req, res) => {
         res.json({ blOk: false, message });
         return;
       }
-
+      
       if (result.length > 0) {
         const update = result[0];
         const CDRESET = codigo;
@@ -145,22 +185,42 @@ const enviarEmail = (req, res) => {
 
 /**
  * @swagger
- * /confirm-code:
+ * /confirmar-codigo:
  *   post:
- *     summary: Confirmar o código enviado por e-mail
- *     description: Verifica se o código fornecido pelo usuário corresponde ao enviado para redefinir a senha.
+ *     summary: Confirmar código de redefinição de senha
+ *     description: Valida o código de redefinição de senha enviado ao usuário.
+ *     operationId: confirmarCodigo
  *     parameters:
  *       - name: code
  *         in: body
  *         required: true
- *         description: Código enviado para redefinição de senha
+ *         description: Código enviado por e-mail para validação.
  *         schema:
  *           type: string
+ *           example: "123456"
  *     responses:
  *       200:
- *         description: Código validado com sucesso
+ *         description: Código validado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Código validado com sucesso!'
  *       400:
- *         description: Código inválido
+ *         description: Código inválido.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Código inválido!'
  */
 const confirmarCodigo = (req, res) => {
   const codigo = geraCodigo();
@@ -180,28 +240,48 @@ const confirmarCodigo = (req, res) => {
 
 /**
  * @swagger
- * /update-password:
+ * /atualiza-senha:
  *   post:
- *     summary: Atualizar a senha do usuário
- *     description: Permite que o usuário atualize sua senha após a validação do código de redefinição.
+ *     summary: Atualizar senha
+ *     description: Atualiza a senha do usuário utilizando o e-mail e a nova senha.
+ *     operationId: atualizaSenha
  *     parameters:
  *       - name: email
  *         in: body
  *         required: true
- *         description: E-mail do usuário
+ *         description: E-mail do usuário.
  *         schema:
  *           type: string
+ *           format: email
  *       - name: password
  *         in: body
  *         required: true
- *         description: Nova senha do usuário
+ *         description: Nova senha do usuário.
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Senha atualizada com sucesso
- *       500:
- *         description: Erro ao atualizar a senha
+ *         description: Senha atualizada com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Senha atualizada com sucesso!'
+ *       400:
+ *         description: Erro ao atualizar a senha.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao redefinir a senha!'
  */
 const atualizaSenha = (req, res) => {
   const { email, password } = req.body;

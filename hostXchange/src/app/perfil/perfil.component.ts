@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { MenuComponent } from '../components/menu/menu.component';
 import { FooterComponent } from '../components/footer/footer.component';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 
 // interface RedeSocial {
@@ -35,6 +36,7 @@ export class PerfilComponent implements OnInit {
   public avaliacoesPendentes: any = [];
   public avaliacoesRecebidas: any = [];
   public avaliacoesFeitas: any = [];
+  criteriosFaltantes: string[] = [];
 
   public usuario: any = {};
 
@@ -76,8 +78,8 @@ export class PerfilComponent implements OnInit {
   // mostrarAvaliacoes = false;
   avaliacao: any;
 
-  private fotoPerfilPreviewUrl: string = '';
-  private fotoCapaPreviewUrl: string = '';
+  fotoPerfilPreviewUrl: string = '';
+  fotoCapaPreviewUrl: string = '';
 
 
   todasRedesSociais: string[] = ['LinkedIn', 'Twitter', 'Facebook', 'Instagram'];
@@ -96,9 +98,10 @@ export class PerfilComponent implements OnInit {
   constructor(
     private toastr: ToastrService
     , private service: PerfilService
-    , private fb: FormBuilder
-    , private cdr: ChangeDetectorRef
+    , private fb    : FormBuilder
+    , private cdr   : ChangeDetectorRef
     , private ngZone: NgZone
+    , private router: Router
   ) { }
 
 
@@ -120,6 +123,7 @@ export class PerfilComponent implements OnInit {
       next: async (res: any) => {
         if (res.blOk === true) {
           this.usuario = res.dados;
+          this.senhaAtualCorreta = this.usuario.senha;
           const { fotoCapa, fotoPerfil } = res.dados;
 
           this.perfilForm.patchValue({
@@ -210,9 +214,9 @@ export class PerfilComponent implements OnInit {
       cpf: [this.usuario?.cpf, [Validators.required, Validators.minLength(11)]],
       passaporte: [this.usuario?.nrpassa, [Validators.required, Validators.minLength(8)]],
       redesSociais: this.fb.array([]),
-      senhaAtual: ['', Validators.minLength(6)],
+      senhaAtual: ['', Validators.minLength(8)],
       novaSenha: ['', [
-        Validators.minLength(6),
+        Validators.minLength(8),
         Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)
       ]],
       confirmarNovaSenha: ['']
@@ -264,6 +268,83 @@ export class PerfilComponent implements OnInit {
     this.avaliacao = idAvaliacao;
     //this.avaliacaoPendenteEspecifica = this.AvaliacaoPendente.find(avaliacao => avaliacao.idAvaliar === idAvaliacao);
     this.view = 4;
+  }
+
+  mostrarAvaliacoesFeitas() {
+    this.view = 5;
+  }
+
+  verIntercambio() {
+    const intercambio = localStorage.getItem("idIntercambio") || "0";
+    if(intercambio != "0") {
+      localStorage.setItem('verIntercambio', intercambio);
+      this.router.navigate(['/intercambio']);
+    } else {
+      this.toastr.warning("Cadastre seu intercâmbio!");
+    }
+  }
+
+  forcaDaSenha: number = 0;
+  forcaDaSenhaMensagem: string = '';
+  forcaDaSenhaClass: string = '';
+
+  private getCriteriosFaltantes(senha: string): string[] {
+    const criterios = [
+      { regex: /.{8,}/, mensagem: 'Mínimo de 8 caracteres' },
+      { regex: /[A-Z]/, mensagem: 'Uma letra maiúscula' },
+      { regex: /[a-z]/, mensagem: 'Uma letra minúscula' },
+      { regex: /[0-9]/, mensagem: 'Um número' }
+    ];
+
+    return criterios
+      .filter(criterio => !criterio.regex.test(senha))
+      .map(criterio => criterio.mensagem);
+  }
+
+  calcularForcaSenha(senha: string): void {
+    if (!senha) {
+      this.forcaDaSenha = 0;
+      this.forcaDaSenhaMensagem = '';
+      this.forcaDaSenhaClass = '';
+      this.criteriosFaltantes = []; // Nova propriedade
+      return;
+    }
+
+    const criteria = [
+      { regex: /.{8,}/, weight: 25 },
+      { regex: /[A-Z]/, weight: 25 },
+      { regex: /[a-z]/, weight: 25 },
+      { regex: /[0-9]/, weight: 25 },
+    ];
+
+    const forca = criteria.reduce((acc, criterion) =>
+      acc + (criterion.regex.test(senha) ? criterion.weight : 0), 0);
+
+    const { mensagem, classe } = this.forcaDaSenhaEMensagem(forca);
+
+    this.forcaDaSenha = forca;
+    this.forcaDaSenhaMensagem = mensagem;
+    this.forcaDaSenhaClass = classe;
+    this.criteriosFaltantes = this.getCriteriosFaltantes(senha); // Atualiza os critérios faltantes
+  }
+
+  private forcaDaSenhaEMensagem(forca: number): { mensagem: string, classe: string } {
+    if (forca <= 25) {
+      return { mensagem: 'Muito fraca', classe: 'bg-danger' };
+    } else if (forca <= 50) {
+      return { mensagem: 'Fraca', classe: 'bg-warning' };
+    } else if (forca <= 75) {
+      return { mensagem: 'Média', classe: 'bg-info' };
+    } else if (forca < 100) {
+      return { mensagem: 'Forte', classe: 'bg-primary' };
+    } else {
+      return { mensagem: 'Muito forte', classe: 'bg-success' };
+    }
+  }
+
+  onNovaSenhaChange(): void {
+    const novaSenha = this.perfilForm.get('novaSenha')?.value || '';
+    this.calcularForcaSenha(novaSenha);
   }
 
   getNotaFormatada(): string {
@@ -369,6 +450,7 @@ export class PerfilComponent implements OnInit {
     return null;
   }
 
+  //função para verificar se a senha atual digitada é igual a senha que vem do banco
   passwordRequiredValidator(control: AbstractControl): ValidationErrors | null {
     const senhaAtual = control.get('senhaAtual')?.value;
     const senhaAtualCorreta = this.senhaAtualCorreta; // Deve ser passada do componente
@@ -446,35 +528,26 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  getFotoPreviewUrl(file: File | null): string {
-    if (file === this.fotoPerfilFile) {
-      return this.fotoPerfilPreviewUrl;
-    } else if (file === this.fotoCapaFile) {
-      return this.fotoCapaPreviewUrl;
-    }
-    return '';
-  }
-
   removerFoto(tipo: 'perfil' | 'capa') {
     if (tipo === 'perfil') {
       if (this.fotoPerfilFile) {
         URL.revokeObjectURL(this.fotoPerfilPreviewUrl);
         this.fotoPerfilFile = undefined;
         this.fotoPerfilPreviewUrl = '';
-        this.usuario.fotoPerfil = 'assets/images/perfil/perfil.jpg';
+        //this.usuario.fotoPerfil = 'assets/images/perfil/perfil.jpg';
       }
     } else {
       if (this.fotoCapaFile) {
         URL.revokeObjectURL(this.fotoCapaPreviewUrl);
         this.fotoCapaFile = undefined;
         this.fotoCapaPreviewUrl = '';
-        this.usuario.fotoCapa = 'assets/images/perfil/capa.jpg';
+        //this.usuario.fotoCapa = 'assets/images/perfil/capa.jpg';
       }
     }
 
-    this.perfilForm.patchValue({
-      [tipo === 'perfil' ? 'fotoPerfil' : 'fotoCapa']: ''
-    });
+    //this.perfilForm.patchValue({
+    //  [tipo === 'perfil' ? 'fotoPerfil' : 'fotoCapa']: ''
+    //});
 
     this.toastr.success(`Foto de ${tipo} removida com sucesso.`);
   }

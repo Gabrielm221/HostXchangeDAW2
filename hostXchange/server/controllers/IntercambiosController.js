@@ -30,12 +30,46 @@ const upload = multer({
  * /intercambios:
  *   get:
  *     summary: Buscar todos os intercâmbios
- *     description: Retorna uma lista de todos os intercâmbios cadastrados no sistema.
+ *     description: Retorna todos os intercâmbios cadastrados na plataforma.
+ *     operationId: buscar
  *     responses:
  *       200:
- *         description: Lista de intercâmbios encontrada com sucesso
+ *         description: Lista de intercâmbios retornada com sucesso.
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *               nmlocal:
+ *                 type: string
+ *               titulo:
+ *                 type: string
+ *               descricao:
+ *                 type: string
+ *               servicos:
+ *                 type: string
+ *               beneficios:
+ *                 type: string
+ *               duracao:
+ *                 type: string
+ *               imagens:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Lista de caminhos das imagens do intercâmbio.
  *       500:
- *         description: Erro ao buscar intercâmbios
+ *         description: Erro ao buscar intercâmbios.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao buscar intercâmbios!'
  */
 const buscar = async (req, res) => {
     try {
@@ -53,21 +87,60 @@ const buscar = async (req, res) => {
  * /intercambios/{id}:
  *   get:
  *     summary: Buscar intercâmbio por ID
- *     description: Retorna um intercâmbio específico pelo seu ID.
+ *     description: Retorna os detalhes de um intercâmbio específico baseado no ID fornecido.
+ *     operationId: buscarPorId
  *     parameters:
  *       - name: id
  *         in: path
  *         required: true
- *         description: ID do intercâmbio
- *         schema:
- *           type: integer
+ *         description: ID do intercâmbio a ser buscado.
+ *         type: string
  *     responses:
  *       200:
- *         description: Intercâmbio encontrado com sucesso
+ *         description: Intercâmbio encontrado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *             nmlocal:
+ *               type: string
+ *             titulo:
+ *               type: string
+ *             descricao:
+ *               type: string
+ *             servicos:
+ *               type: string
+ *             beneficios:
+ *               type: string
+ *             duracao:
+ *               type: string
+ *             imagens:
+ *               type: array
+ *               items:
+ *                 type: string
  *       404:
- *         description: Intercâmbio não encontrado
+ *         description: Intercâmbio não encontrado.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Intercâmbio não encontrado!'
  *       500:
- *         description: Erro ao buscar intercâmbio por ID
+ *         description: Erro ao buscar intercâmbio por ID.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao buscar intercâmbio por ID!'
  */
 const buscarPorId = async (req, res) => {
     try {
@@ -90,63 +163,94 @@ const buscarPorId = async (req, res) => {
  * /intercambios:
  *   post:
  *     summary: Cadastrar um novo intercâmbio
- *     description: Cadastra um novo intercâmbio com imagens e detalhes fornecidos.
- *     consumes:
- *       - multipart/form-data
+ *     description: Registra um novo intercâmbio, incluindo o upload das imagens associadas ao intercâmbio.
+ *     operationId: cadastrar
  *     parameters:
- *       - name: nmlocal
+ *       - name: body
  *         in: body
+ *         description: Dados necessários para o cadastro do intercâmbio, incluindo as imagens.
  *         required: true
- *         description: Nome do local do intercâmbio
  *         schema:
- *           type: string
- *       - name: titulo
- *         in: body
- *         required: true
- *         description: Título do intercâmbio
- *         schema:
- *           type: string
- *       - name: descricao
- *         in: body
- *         required: true
- *         description: Descrição do intercâmbio
- *         schema:
- *           type: string
- *       - name: servicos
- *         in: body
- *         required: true
- *         description: Serviços inclusos no intercâmbio
- *         schema:
- *           type: string
- *       - name: beneficios
- *         in: body
- *         required: true
- *         description: Benefícios oferecidos no intercâmbio
- *         schema:
- *           type: string
- *       - name: duracao
- *         in: body
- *         required: true
- *         description: Duração do intercâmbio
- *         schema:
- *           type: string
- *       - name: idhost
- *         in: body
- *         required: true
- *         description: ID do host responsável pelo intercâmbio
- *         schema:
- *           type: integer
- *       - name: images
- *         in: formData
- *         type: array
- *         items:
- *           type: file
- *         description: Imagens do intercâmbio (até 10 arquivos, limite de 5MB por arquivo)
+ *           type: object
+ *           required:
+ *             - nmlocal
+ *             - titulo
+ *             - descricao
+ *             - servicos
+ *             - beneficios
+ *             - duracao
+ *             - idhost
+ *           properties:
+ *             nmlocal:
+ *               type: string
+ *               description: Nome do local do intercâmbio.
+ *             titulo:
+ *               type: string
+ *               description: Título do intercâmbio.
+ *             descricao:
+ *               type: string
+ *               description: Descrição do intercâmbio.
+ *             servicos:
+ *               type: string
+ *               description: Serviços oferecidos no intercâmbio.
+ *             beneficios:
+ *               type: string
+ *               description: Benefícios do intercâmbio.
+ *             duracao:
+ *               type: string
+ *               description: Duração do intercâmbio.
+ *             idhost:
+ *               type: string
+ *               description: ID do host que oferece o intercâmbio.
+ *             images:
+ *               type: array
+ *               items:
+ *                 type: file
+ *               description: Lista de imagens a serem enviadas para o intercâmbio.
  *     responses:
  *       201:
- *         description: Intercâmbio cadastrado com sucesso
+ *         description: Intercâmbio cadastrado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Intercâmbio cadastrado com sucesso!'
+ *             intercambio:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 nmlocal:
+ *                   type: string
+ *                 titulo:
+ *                   type: string
+ *                 descricao:
+ *                   type: string
+ *                 servicos:
+ *                   type: string
+ *                 beneficios:
+ *                   type: string
+ *                 duracao:
+ *                   type: string
+ *                 imagens:
+ *                   type: array
+ *                   items:
+ *                     type: string
  *       500:
- *         description: Erro ao cadastrar intercâmbio
+ *         description: Erro ao cadastrar intercâmbio.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao cadastrar intercâmbio!'
  */
 const cadastrar = async (req, res) => {
     upload(req, res, async (err) => {

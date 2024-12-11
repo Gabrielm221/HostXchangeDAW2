@@ -23,19 +23,31 @@
             <span class="ms-2">{{ notaAvaliacaoUsuario > 0 ? getNotaFormatada() + '/5' : 'O usuário ' + usuario?.nome +
               ' ainda não foi avaliado' }}</span>
           </div>
-          <button class="btn btn-outline-light mt-2" (click)="mostrarAvaliacoes()">Ver mais</button>
+          <button class="btn btn-outline-light mt-2 me-2" (click)="mostrarAvaliacoes()">
+            <i class="fas fa-angle-double-up"></i> Veja as avaliações sobre este usuário
+          </button>
+          <button *ngIf="verPerfil == 0 && avaliacoesFeitas.length > 0" class="btn btn-outline-light mt-2"
+            (click)="mostrarAvaliacoesFeitas()">
+            <i class="fas fa-star me-1"></i> Suas avaliações já feitas
+          </button>
         </div>
 
       </div>
 
       <div class="card bg-secondary mb-4 mx-3">
         <div class="card-body">
-          <h2 class="card-title">
-            Informações Pessoais
-            <button *ngIf="verPerfil == 0" class="btn btn-outline-light float-end"
-              (click)="editar()">
+          <div class="btn-group float-end">
+            <button *ngIf="verPerfil == 0 && usuario.idhost != null" class="btn btn-outline-light me-2"
+              (click)="verIntercambio()">
+              <i class="fas fa-home me-1"></i> Veja aqui seu Intercâmbio
+            </button>
+
+            <button *ngIf="verPerfil == 0" class="btn btn-outline-light" (click)="editar()">
               <i class="fas fa-edit"></i> Editar
             </button>
+          </div>
+          <h2 class="card-title">
+            Informações Pessoais:
           </h2>
           <ul class="list-group list-group-flush">
             <li class="list-group-item bg-secondary text-white d-flex align-items-center">
@@ -64,7 +76,7 @@
 
       <div class="card bg-secondary mb-4 mx-4">
         <div class="card-body">
-          <h2 class="card-title">Redes Sociais</h2>
+          <h2 class="card-title">Redes Sociais:</h2>
           @if (redesSociais.length > 0) {
           <div class="row row-cols-2 row-cols-md-4 g-2 mt-3">
             <div *ngFor="let rede of redesSociais" class="col">
@@ -116,53 +128,53 @@
           <h3>Fotos</h3>
           <div class="mb-3">
             <label for="fotoPerfil" class="form-label">Foto de Perfil</label>
-            <input type="file" id="fotoPerfil" (change)="onFileSelected($event, 'perfil')" class="form-control bg-secondary text-white" accept="image/*">
+            <input type="file" id="fotoPerfil" (change)="onFileSelected($event, 'perfil')"
+              class="form-control bg-secondary text-white" accept="image/*">
           </div>
           <div class="mb-3">
             <label for="fotoCapa" class="form-label">Foto de Capa</label>
-            <input type="file" id="fotoCapa" (change)="onFileSelected($event, 'capa')" class="form-control bg-secondary text-white" accept="image/*">
+            <input type="file" id="fotoCapa" (change)="onFileSelected($event, 'capa')"
+              class="form-control bg-secondary text-white" accept="image/*">
           </div>
         </div>
 
         <!-- Previews das Fotos -->
         <div class="row mb-4">
+          <!-- Preview Foto de Perfil -->
           <div class="col-md-6">
             <div class="card bg-secondary">
-              <div class="card-body">
+              <div class="card-body text-center">
                 <h4>Preview Foto de Perfil</h4>
-                <div class="preview-container position-relative">
-                  <div *ngIf="fotoPerfilFile; else noImagePerfil">
-                    <div class="preview-image" [style.backgroundImage]="'url(' + getFotoPreviewUrl(fotoPerfilFile) + ')'"></div>
-                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" (click)="removerFoto('perfil')">×</button>
-                  </div>
-                  <ng-template #noImagePerfil>
-                    <div class="preview-placeholder d-flex align-items-center justify-content-center">
-                      Nenhuma imagem selecionada
-                    </div>
-                  </ng-template>
+                <div *ngIf="fotoPerfilPreviewUrl; else noImagePerfil">
+                  <img [src]="fotoPerfilPreviewUrl" alt="Foto de Perfil" class="img-fluid rounded">
+                  <button type="button" class="btn btn-danger btn-sm mt-2"
+                    (click)="removerFoto('perfil')">Remover</button>
                 </div>
+                <ng-template #noImagePerfil>
+                  <p class="text-white">Nenhuma imagem selecionada</p>
+                </ng-template>
               </div>
             </div>
           </div>
+
+          <!-- Preview Foto de Capa -->
           <div class="col-md-6">
             <div class="card bg-secondary">
-              <div class="card-body">
+              <div class="card-body text-center">
                 <h4>Preview Foto de Capa</h4>
-                <div class="preview-container position-relative">
-                  <div *ngIf="fotoCapaFile; else noImageCapa">
-                    <div class="preview-image" [style.backgroundImage]="'url(' + getFotoPreviewUrl(fotoCapaFile) + ')'"></div>
-                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" (click)="removerFoto('capa')">×</button>
-                  </div>
-                  <ng-template #noImageCapa>
-                    <div class="preview-placeholder d-flex align-items-center justify-content-center">
-                      Nenhuma imagem selecionada
-                    </div>
-                  </ng-template>
+                <div *ngIf="fotoCapaPreviewUrl; else noImageCapa">
+                  <img [src]="fotoCapaPreviewUrl" alt="Foto de Capa" class="img-fluid rounded">
+                  <button type="button" class="btn btn-danger btn-sm mt-2"
+                    (click)="removerFoto('capa')">Remover</button>
                 </div>
+                <ng-template #noImageCapa>
+                  <p class="text-white">Nenhuma imagem selecionada</p>
+                </ng-template>
               </div>
             </div>
           </div>
         </div>
+
 
         <!-- Campos de Edição do Usuário -->
         <div class="mb-3">
@@ -181,8 +193,7 @@
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email:<span class="text-danger">*</span></label>
-          <input type="text" id="email" formControlName="email" class="form-control bg-secondary text-white"
-            required>
+          <input type="text" id="email" formControlName="email" class="form-control bg-secondary text-white" required>
           <div *ngIf="perfilForm.get('email')?.errors?.['required'] && perfilForm.get('email')?.touched"
             class="text-danger mt-1">
             <small>O email é obrigatório.</small>
@@ -193,8 +204,8 @@
         </div>
         <div class="mb-3">
           <label for="rg" class="form-label">RG:<span class="text-danger">*</span></label>
-          <input type="text" id="rg" formControlName="rg" mask="00.000.000"
-            class="form-control bg-secondary text-white" required>
+          <input type="text" id="rg" formControlName="rg" mask="00.000.000" class="form-control bg-secondary text-white"
+            required>
           <div *ngIf="perfilForm.get('rg')?.errors?.['required'] && perfilForm.get('rg')?.touched"
             class="text-danger mt-1">
             <small>O RG é obrigatório.</small>
@@ -325,19 +336,41 @@
           <div class="mb-3">
             <label for="novaSenha" class="form-label">Nova Senha</label>
             <div class="input-group">
-              <input type="{{ passwordVisible.new ? 'text' : 'password' }}" id="newPassword" formControlName="novaSenha"
+              <input 
+                type="{{ passwordVisible.new ? 'text' : 'password' }}" 
+                id="newPassword" 
+                formControlName="novaSenha"
+                (input)="onNovaSenhaChange()" 
                 class="form-control bg-secondary text-white">
               <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('new')">
                 <i [class]="passwordVisible.new ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
-            <div *ngIf="perfilForm.get('novaSenha')?.hasError('minlength')" class="text-danger mt-1">
-              <small>A nova senha deve ter no mínimo 6 caracteres.</small>
+          
+            <!-- Barra de força da senha -->
+            <div class="mt-2">
+              <small class="text-muted">Força da Senha:</small>
+              <div class="progress">
+                <div class="progress-bar" 
+                     role="progressbar" 
+                     [ngClass]="forcaDaSenhaClass"
+                     [style.width.%]="forcaDaSenha">
+                  {{forcaDaSenhaMensagem}}
+                </div>
+              </div>
             </div>
-            <div *ngIf="perfilForm.get('novaSenha')?.hasError('pattern')" class="text-danger mt-1">
-              <small>A nova senha deve conter pelo menos uma letra e um número.</small>
+          
+            <!-- Critérios faltantes -->
+            <div class="mt-2" *ngIf="criteriosFaltantes.length > 0">
+              <small class="text-warning">
+                Critérios faltantes:
+                <ul class="mb-0 ps-3">
+                  <li *ngFor="let criterio of criteriosFaltantes">{{criterio}}</li>
+                </ul>
+              </small>
             </div>
           </div>
+
           <div class="mb-3">
             <label for="confirmarNovaSenha" class="form-label">Confirmar Nova Senha</label>
             <div class="input-group">
@@ -360,7 +393,13 @@
         </div>
 
         <!-- Botões de Ação -->
-        <button type="button" class="btn btn-primary" (click)="salvarAlteracoes()" [disabled]="!perfilForm.valid || (!perfilForm.dirty && !redesSociaisForamAlteradas())" >Salvar Alterações</button>
+        <button type="button" class="btn btn-primary" (click)="salvarAlteracoes()"
+          [disabled]="!perfilForm.valid || (!perfilForm.dirty && !redesSociaisForamAlteradas())
+          || (perfilForm.get('novaSenha')?.value && forcaDaSenha < 75)
+          || (perfilForm.get('novaSenha')?.value && perfilForm.hasError('senhaAtualIncorreta')) 
+          || (perfilForm.get('novaSenha')?.value && perfilForm.hasError('senhasNaoCompativeis'))
+          ">Salvar
+          Alterações</button>
         <button type="button" class="btn btn-secondary ms-2" (click)="cancelarAlteracoes()">Cancelar</button>
       </div> <!-- Fim de card-body -->
     </form>
@@ -426,11 +465,10 @@
             <label for="avaliacao" class="form-label">Avaliação:</label>
             <div class="d-flex align-items-center">
               <div class="stars text-secondary me-2">
-              <i *ngFor="let star of [1, 2, 3, 4, 5]" class="fas fa-star" 
-                 [class.text-warning]="star <= avaliacaoForm.get('avaliacao')?.value"
-                 (click)="avaliacaoForm.get('avaliacao')?.setValue(star)" 
-                 style="cursor: pointer">
-              </i>
+                <i *ngFor="let star of [1, 2, 3, 4, 5]" class="fas fa-star"
+                  [class.text-warning]="star <= avaliacaoForm.get('avaliacao')?.value"
+                  (click)="avaliacaoForm.get('avaliacao')?.setValue(star)" style="cursor: pointer">
+                </i>
               </div>
               <span>{{avaliacaoForm.get('avaliacao')?.value || 1}}/5</span>
             </div>
@@ -446,6 +484,50 @@
       </div>
     </div>
   </section>
-  
+
+  <!-- Seção de Avaliações Feitas -->
+  <section *ngIf="view === 5" id="avaliacoes-feitas" class="mb-5">
+    <div class="card bg-dark text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>Avaliações Feitas</h2>
+          <button class="btn btn-outline-light" (click)="voltar()">
+            <i class="fas fa-times"></i> Fechar
+          </button>
+        </div>
+
+        <div *ngIf="avaliacoesFeitas.length > 0; else noAvaliacoesFeitas">
+          <div class="avaliacoes-lista">
+            <div *ngFor="let avaliacao of avaliacoesFeitas" class="card bg-secondary mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-user-circle fa-2x me-2"></i>
+                    <div>
+                      <h5 class="mb-0">{{ avaliacao.avaliado.nome }}</h5>
+                      <div class="stars">
+                        <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                          <i class="fas fa-star" [class.text-warning]="i < avaliacao.avaliacao"></i>
+                        </ng-container>
+                        {{ avaliacao.avaliacao }}/5
+                      </div>
+                    </div>
+                  </div>
+                  <small class="text-light">{{ avaliacao.dtaval | date:'dd/MM/yyyy' }}</small>
+                </div>
+                <p *ngIf="avaliacao.descricao" class="mt-3 mb-0">{{ avaliacao.descricao }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noAvaliacoesFeitas>
+          <div class="alert alert-info">
+            Nenhuma avaliação feita por este usuário.
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </section>
+
 </main>
 <app-footer></app-footer>

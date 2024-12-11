@@ -4,10 +4,11 @@ const router = express.Router();
 
 /**
  * @swagger
- * /cadastro/cadastroUsuario:
+ * /cadastros/cadastroUsuario:
  *   post:
- *     summary: Realizar o cadastro de um novo usuário.
- *     description: Este endpoint permite cadastrar um novo usuário no sistema com informações básicas.
+ *     summary: Cadastro de usuário
+ *     description: Cria um novo usuário com as informações fornecidas, incluindo dados pessoais e de contato.
+ *     operationId: cadastroUsuario
  *     requestBody:
  *       required: true
  *       content:
@@ -17,29 +18,28 @@ const router = express.Router();
  *             properties:
  *               nome:
  *                 type: string
- *                 description: Nome completo do usuário.
+ *                 example: "João Silva"
  *               email:
  *                 type: string
- *                 format: email
- *                 description: Endereço de e-mail do usuário.
+ *                 example: "joao.silva@email.com"
  *               password:
  *                 type: string
- *                 description: Senha do usuário.
+ *                 example: "senha123"
  *               cpf:
  *                 type: string
- *                 description: CPF do usuário.
+ *                 example: "12345678900"
  *               rg:
  *                 type: string
- *                 description: RG do usuário.
+ *                 example: "MG1234567"
  *               sexo:
  *                 type: string
- *                 description: Sexo do usuário.
+ *                 example: "M"
  *               passaporte:
  *                 type: string
- *                 description: Número do passaporte do usuário (opcional).
+ *                 example: "AB1234567"
  *               nacionalidade:
  *                 type: string
- *                 description: Nacionalidade do usuário.
+ *                 example: "Brasileiro"
  *     responses:
  *       200:
  *         description: Usuário cadastrado com sucesso.
@@ -50,21 +50,24 @@ const router = express.Router();
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Indicador de sucesso.
+ *                   example: true
  *                 message:
  *                   type: string
- *                   description: Mensagem de sucesso.
+ *                   example: "Usuário cadastrado com sucesso!"
  *       400:
- *         description: Erro ao cadastrar o usuário.
+ *         description: Dados inválidos ou ausentes.
+ *       500:
+ *         description: Erro ao cadastrar usuário.
  */
 router.post('/cadastroUsuario', cadastros.cadastroUsuario);
 
 /**
  * @swagger
- * /cadastro/tornaHost:
+ * /cadastros/tornaHost:
  *   post:
- *     summary: Tornar um usuário um Host.
- *     description: Este endpoint permite transformar um usuário em um Host após o cadastro de uma propriedade.
+ *     summary: Tornar usuário um host
+ *     description: Transforma um usuário comum em host, vinculando-o a uma propriedade registrada.
+ *     operationId: tornaHost
  *     requestBody:
  *       required: true
  *       content:
@@ -72,46 +75,15 @@ router.post('/cadastroUsuario', cadastros.cadastroUsuario);
  *           schema:
  *             type: object
  *             properties:
- *               nomePropriedade:
- *                 type: string
- *                 description: Nome da propriedade que o usuário está cadastrando.
- *               rua:
- *                 type: string
- *                 description: Rua do endereço da propriedade.
- *               numero:
- *                 type: string
- *                 description: Número da propriedade.
- *               complemento:
- *                 type: string
- *                 description: Complemento do endereço (opcional).
- *               cidade:
- *                 type: string
- *                 description: Cidade onde a propriedade está localizada.
- *               estado:
- *                 type: string
- *                 description: Estado onde a propriedade está localizada.
- *               cep:
- *                 type: string
- *                 description: CEP da propriedade.
- *               telefone:
- *                 type: string
- *                 description: Número de telefone de contato da propriedade.
- *               tipoPropriedade:
- *                 type: string
- *                 description: Tipo de propriedade (ex: casa, apartamento).
- *               email:
- *                 type: string
- *                 format: email
- *                 description: E-mail de contato para a propriedade.
- *               latitude:
- *                 type: number
- *                 description: Latitude da propriedade.
- *               longitude:
- *                 type: number
- *                 description: Longitude da propriedade.
+ *               idUsuario:
+ *                 type: integer
+ *                 example: 1
+ *               idHost:
+ *                 type: integer
+ *                 example: 100
  *     responses:
  *       200:
- *         description: Host cadastrado com sucesso.
+ *         description: Usuário transformado em host com sucesso.
  *         content:
  *           application/json:
  *             schema:
@@ -119,12 +91,16 @@ router.post('/cadastroUsuario', cadastros.cadastroUsuario);
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Indicador de sucesso.
- *                 idHost:
- *                   type: integer
- *                   description: ID do Host recém-criado.
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Seu perfil foi atualizado para Host!"
  *       400:
- *         description: Erro ao tornar usuário um Host.
+ *         description: Dados inválidos ou ausentes.
+ *       404:
+ *         description: Usuário ou Host não encontrado.
+ *       500:
+ *         description: Erro ao transformar o usuário em host.
  */
 router.post('/tornaHost', cadastros.cadastroHost);
 

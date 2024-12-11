@@ -1,57 +1,85 @@
-// Importa o bcrypt para criptografar senhas e o DAO de Cadastro para interagir com o banco de dados
 const bcrypt = require('bcrypt');
 const cadastroDAO = require('../dao/CadastroDAO');
 const saltRounds = 10;
 
 /**
  * @swagger
- * /usuario:
+ * /cadastro/usuario:
  *   post:
- *     summary: Cadastro de um novo usuário
- *     description: Cria um novo usuário com senha criptografada e outros dados pessoais.
+ *     summary: Cadastrar um novo usuário
+ *     description: Realiza o cadastro de um novo usuário na plataforma.
+ *     operationId: cadastroUsuario
  *     parameters:
- *       - name: nome
+ *       - name: body
  *         in: body
+ *         description: Dados necessários para o cadastro do usuário.
  *         required: true
  *         schema:
  *           type: object
+ *           required:
+ *             - nome
+ *             - email
+ *             - password
+ *             - cpf
+ *             - rg
+ *             - passaporte
+ *             - sexo
+ *             - nacionalidade
  *           properties:
  *             nome:
  *               type: string
- *               description: Nome completo do usuário
+ *               description: Nome completo do usuário.
  *             email:
  *               type: string
- *               description: Email do usuário
+ *               description: Endereço de e-mail do usuário.
  *             password:
  *               type: string
- *               description: Senha do usuário
+ *               description: Senha do usuário. A senha será criptografada.
  *             cpf:
  *               type: string
- *               description: CPF do usuário
+ *               description: CPF do usuário.
  *             rg:
  *               type: string
- *               description: RG do usuário
+ *               description: RG do usuário.
  *             passaporte:
  *               type: string
- *               description: Número do passaporte do usuário (opcional)
+ *               description: Número do passaporte (caso aplicável).
  *             sexo:
  *               type: string
- *               description: Sexo do usuário
+ *               description: Sexo do usuário.
  *             nacionalidade:
  *               type: string
- *               description: Nacionalidade do usuário
+ *               description: Nacionalidade do usuário.
  *     responses:
  *       201:
- *         description: Usuário cadastrado com sucesso
+ *         description: Usuário cadastrado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Cadastro realizado com sucesso!'
  *       500:
- *         description: Erro ao salvar o usuário ou criptografar a senha
+ *         description: Erro no cadastro do usuário.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao criptografar senha!'
  */
 const cadastroUsuario = async (req, res) => {
   const { nome, email, password, cpf, rg, passaporte, sexo, nacionalidade } = req.body;
-
+  
   try {
     const hash = await bcrypt.hash(password, saltRounds);
-    const result = await cadastroDAO.cadastroUsuario(nome, email, hash, cpf, rg, sexo, passaporte, nacionalidade);
+    const result = await cadastroDAO.cadastroUsuario(nome, email, hash, cpf, rg, sexo, passaporte, nacionalidade );
     if (result.success) {
       res.status(201).json(result);
     } else {
@@ -64,63 +92,99 @@ const cadastroUsuario = async (req, res) => {
 
 /**
  * @swagger
- * /host:
+ * /cadastro/host:
  *   post:
- *     summary: Cadastro de um usuário como Host
- *     description: Cria um Host no sistema e altera o tipo de usuário para Host.
+ *     summary: Cadastrar um novo host
+ *     description: Realiza o cadastro de um novo host, que será associado a um usuário existente.
+ *     operationId: cadastroHost
  *     parameters:
- *       - name: idUsuario
+ *       - name: body
  *         in: body
+ *         description: Dados necessários para o cadastro do host.
  *         required: true
  *         schema:
  *           type: object
+ *           required:
+ *             - idUsuario
+ *             - nomePropriedade
+ *             - rua
+ *             - numero
+ *             - cidade
+ *             - estado
+ *             - cep
+ *             - telefone
+ *             - tipoPropriedade
+ *             - email
+ *             - latitude
+ *             - longitude
  *           properties:
  *             idUsuario:
- *               type: integer
- *               description: ID do usuário que se tornará um Host
+ *               type: string
+ *               description: ID do usuário que está sendo alterado para host.
  *             nomePropriedade:
  *               type: string
- *               description: Nome da propriedade onde o Host reside
+ *               description: Nome da propriedade do host.
  *             rua:
  *               type: string
- *               description: Rua do endereço do Host
+ *               description: Rua onde a propriedade está localizada.
  *             numero:
  *               type: string
- *               description: Número do imóvel
+ *               description: Número da propriedade.
  *             complemento:
  *               type: string
- *               description: Complemento do endereço
+ *               description: Complemento do endereço da propriedade (opcional).
  *             cidade:
  *               type: string
- *               description: Cidade do endereço
+ *               description: Cidade onde a propriedade está localizada.
  *             estado:
  *               type: string
- *               description: Estado do endereço
+ *               description: Estado onde a propriedade está localizada.
  *             cep:
  *               type: string
- *               description: CEP do endereço
+ *               description: CEP da propriedade.
  *             telefone:
  *               type: string
- *               description: Número de telefone do Host
+ *               description: Telefone para contato do host.
  *             tipoPropriedade:
  *               type: string
- *               description: Tipo da propriedade (ex: casa, apartamento)
+ *               description: Tipo de propriedade (exemplo: casa, apartamento, etc.).
  *             email:
  *               type: string
- *               description: Email de contato do Host
+ *               description: E-mail para contato do host.
  *             latitude:
  *               type: number
  *               format: float
- *               description: Latitude do endereço
+ *               description: Latitude da propriedade.
  *             longitude:
  *               type: number
  *               format: float
- *               description: Longitude do endereço
+ *               description: Longitude da propriedade.
  *     responses:
  *       201:
- *         description: Host cadastrado com sucesso e tipo de usuário alterado
+ *         description: Host cadastrado com sucesso e usuário alterado.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Usuário alterado para Host com sucesso!'
+ *             idHost:
+ *               type: integer
+ *               example: 123
  *       500:
- *         description: Erro ao cadastrar o Host ou alterar o tipo de usuário
+ *         description: Erro no cadastro do host ou na atualização do usuário.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao criar Host!'
  */
 const cadastroHost = async (req, res) => {
   try {

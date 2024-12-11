@@ -7,8 +7,9 @@ const router = express.Router();
  * @swagger
  * /intercambios/buscar:
  *   get:
- *     summary: Buscar todos os intercâmbios.
- *     description: Este endpoint retorna todos os intercâmbios disponíveis no sistema, incluindo informações do host e avaliações.
+ *     summary: Buscar todos os intercâmbios
+ *     description: Retorna uma lista de todos os intercâmbios cadastrados.
+ *     operationId: buscarIntercambios
  *     responses:
  *       200:
  *         description: Lista de intercâmbios encontrados.
@@ -19,10 +20,10 @@ const router = express.Router();
  *               properties:
  *                 blOk:
  *                   type: boolean
- *                   description: Indicador de sucesso.
+ *                   example: true
  *                 message:
  *                   type: string
- *                   description: Mensagem de sucesso.
+ *                   example: "Intercâmbios encontrados com sucesso!"
  *                 data:
  *                   type: array
  *                   items:
@@ -30,28 +31,13 @@ const router = express.Router();
  *                     properties:
  *                       id:
  *                         type: integer
- *                         description: ID do intercâmbio.
+ *                         example: 1
  *                       titulo:
  *                         type: string
- *                         description: Título do intercâmbio.
+ *                         example: "Intercâmbio para Londres"
  *                       descricao:
  *                         type: string
- *                         description: Descrição do intercâmbio.
- *                       avaliacao:
- *                         type: number
- *                         description: Média de avaliação do host.
- *                       cidade:
- *                         type: string
- *                         description: Cidade do intercâmbio.
- *                       estado:
- *                         type: string
- *                         description: Estado do intercâmbio.
- *                       latitude:
- *                         type: number
- *                         description: Latitude do intercâmbio.
- *                       longitude:
- *                         type: number
- *                         description: Longitude do intercâmbio.
+ *                         example: "Oportunidade para estudar inglês em Londres."
  *       500:
  *         description: Erro ao buscar intercâmbios.
  */
@@ -61,8 +47,9 @@ router.get('/buscar', intercambios.buscar);
  * @swagger
  * /intercambios/cadastrar:
  *   post:
- *     summary: Cadastrar um novo intercâmbio.
- *     description: Este endpoint permite cadastrar um novo intercâmbio no sistema, incluindo informações sobre o local, título, descrição e imagens.
+ *     summary: Cadastrar um novo intercâmbio
+ *     description: Cria um novo intercâmbio com as informações fornecidas.
+ *     operationId: cadastrarIntercambio
  *     requestBody:
  *       required: true
  *       content:
@@ -72,27 +59,30 @@ router.get('/buscar', intercambios.buscar);
  *             properties:
  *               titulo:
  *                 type: string
- *                 description: Título do intercâmbio.
+ *                 example: "Estudo em Paris"
  *               descricao:
  *                 type: string
- *                 description: Descrição detalhada do intercâmbio.
+ *                 example: "Curso de francês para iniciantes em Paris."
  *               servicos:
  *                 type: string
- *                 description: Serviços oferecidos durante o intercâmbio.
+ *                 example: "Aulas de francês, alimentação inclusa."
  *               beneficios:
  *                 type: string
- *                 description: Benefícios para o viajante durante o intercâmbio.
+ *                 example: "Certificado de conclusão."
  *               duracao:
  *                 type: string
- *                 description: Duração do intercâmbio.
+ *                 example: "6 meses"
  *               idhost:
  *                 type: integer
- *                 description: ID do host responsável pelo intercâmbio.
+ *                 example: 2
  *               imagens:
  *                 type: array
  *                 items:
- *                   type: string
- *                   description: Caminho da imagem do intercâmbio.
+ *                   type: object
+ *                   properties:
+ *                     path:
+ *                       type: string
+ *                       example: "/images/intercambio1.jpg"
  *     responses:
  *       200:
  *         description: Intercâmbio cadastrado com sucesso.
@@ -103,8 +93,8 @@ router.get('/buscar', intercambios.buscar);
  *               properties:
  *                 idinterc:
  *                   type: integer
- *                   description: ID do intercâmbio recém-cadastrado.
- *       400:
+ *                   example: 10
+ *       500:
  *         description: Erro ao cadastrar intercâmbio.
  */
 router.post('/cadastrar', intercambios.cadastrar);
@@ -113,8 +103,9 @@ router.post('/cadastrar', intercambios.cadastrar);
  * @swagger
  * /intercambios/buscarId:
  *   post:
- *     summary: Buscar um intercâmbio por ID.
- *     description: Este endpoint retorna as informações detalhadas de um intercâmbio específico com base no ID fornecido.
+ *     summary: Buscar intercâmbio por ID
+ *     description: Retorna os detalhes de um intercâmbio com base no ID fornecido.
+ *     operationId: buscarIntercambioPorId
  *     requestBody:
  *       required: true
  *       content:
@@ -124,7 +115,7 @@ router.post('/cadastrar', intercambios.cadastrar);
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID do intercâmbio.
+ *                 example: 10
  *     responses:
  *       200:
  *         description: Detalhes do intercâmbio encontrado.
@@ -135,15 +126,23 @@ router.post('/cadastrar', intercambios.cadastrar);
  *               properties:
  *                 idinterc:
  *                   type: integer
- *                   description: ID do intercâmbio.
+ *                   example: 10
  *                 titulo:
  *                   type: string
- *                   description: Título do intercâmbio.
+ *                   example: "Estudo em Paris"
  *                 descricao:
  *                   type: string
- *                   description: Descrição do intercâmbio.
+ *                   example: "Curso de francês para iniciantes."
+ *                 servicos:
+ *                   type: string
+ *                   example: "Aulas de francês"
+ *                 beneficios:
+ *                   type: string
+ *                   example: "Certificado de conclusão"
  *       404:
  *         description: Intercâmbio não encontrado.
+ *       500:
+ *         description: Erro ao buscar intercâmbio por ID.
  */
 router.post('/buscarId', intercambios.buscarPorId);
 
@@ -151,8 +150,9 @@ router.post('/buscarId', intercambios.buscarPorId);
  * @swagger
  * /intercambios/buscarIntercambio:
  *   post:
- *     summary: Buscar um intercâmbio por ID (via DAO).
- *     description: Este endpoint permite buscar um intercâmbio específico através do DAO, utilizando o ID fornecido.
+ *     summary: Buscar intercâmbio por ID usando DAO
+ *     description: Retorna os detalhes de um intercâmbio com base no ID usando a camada de DAO.
+ *     operationId: buscarIntercambioDao
  *     requestBody:
  *       required: true
  *       content:
@@ -162,7 +162,7 @@ router.post('/buscarId', intercambios.buscarPorId);
  *             properties:
  *               id:
  *                 type: integer
- *                 description: ID do intercâmbio.
+ *                 example: 10
  *     responses:
  *       200:
  *         description: Detalhes do intercâmbio encontrado.
@@ -173,15 +173,20 @@ router.post('/buscarId', intercambios.buscarPorId);
  *               properties:
  *                 idinterc:
  *                   type: integer
- *                   description: ID do intercâmbio.
+ *                   example: 10
  *                 titulo:
  *                   type: string
- *                   description: Título do intercâmbio.
+ *                   example: "Estudo em Paris"
  *                 descricao:
  *                   type: string
- *                   description: Descrição do intercâmbio.
+ *                   example: "Curso de francês para iniciantes."
+ *                 servicos:
+ *                   type: string
+ *                   example: "Aulas de francês"
  *       404:
  *         description: Intercâmbio não encontrado.
+ *       500:
+ *         description: Erro ao buscar intercâmbio.
  */
 router.post('/buscarIntercambio', intercambiosdao.getIntercambioById);
 

@@ -5,56 +5,71 @@ const prisma = new PrismaClient();
  * @swagger
  * /intercambios:
  *   get:
- *     summary: Listar intercâmbios disponíveis.
- *     description: Este endpoint permite listar os intercâmbios disponíveis, incluindo informações sobre os hosts, localização e média das avaliações.
+ *     summary: Listar intercâmbios
+ *     description: Retorna uma lista de intercâmbios, incluindo informações sobre o host e a média de avaliações de cada intercâmbio.
+ *     operationId: listaIntercambio
  *     responses:
  *       200:
- *         description: Intercâmbios listados com sucesso.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 blOk:
- *                   type: boolean
- *                   description: Indicador de sucesso da operação.
- *                 message:
- *                   type: string
- *                   description: Mensagem de sucesso ou erro.
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                         description: ID do intercâmbio.
- *                       titulo:
- *                         type: string
- *                         description: Título do intercâmbio.
- *                       descricao:
- *                         type: string
- *                         description: Descrição do intercâmbio.
- *                       latitude:
- *                         type: number
- *                         format: float
- *                         description: Latitude da localização do host.
- *                       longitude:
- *                         type: number
- *                         format: float
- *                         description: Longitude da localização do host.
- *                       cidade:
- *                         type: string
- *                         description: Cidade onde o intercâmbio ocorre.
- *                       estado:
- *                         type: string
- *                         description: Estado onde o intercâmbio ocorre.
- *                       avaliacao:
- *                         type: number
- *                         format: float
- *                         description: Média das avaliações do host, arredondada para 1 casa decimal.
+ *         description: Lista de intercâmbios com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Intercâmbios listados com sucesso!'
+ *             data:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: ID do intercâmbio.
+ *                     example: 1
+ *                   titulo:
+ *                     type: string
+ *                     description: Título do intercâmbio.
+ *                     example: "Intercâmbio na praia"
+ *                   descricao:
+ *                     type: string
+ *                     description: Descrição do intercâmbio.
+ *                     example: "Desfrute de um intercâmbio relaxante na praia."
+ *                   latitude:
+ *                     type: number
+ *                     format: float
+ *                     description: Latitude da localização do intercâmbio.
+ *                     example: -23.5505
+ *                   longitude:
+ *                     type: number
+ *                     format: float
+ *                     description: Longitude da localização do intercâmbio.
+ *                     example: -46.6333
+ *                   cidade:
+ *                     type: string
+ *                     description: Cidade onde o intercâmbio está localizado.
+ *                     example: "São Paulo"
+ *                   estado:
+ *                     type: string
+ *                     description: Estado onde o intercâmbio está localizado.
+ *                     example: "SP"
+ *                   avaliacao:
+ *                     type: number
+ *                     description: Média das avaliações do intercâmbio.
+ *                     example: 4.5
  *       500:
- *         description: Erro ao listar intercâmbios.
+ *         description: Erro ao listar os intercâmbios.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao listar intercâmbios!'
  */
 const listaIntercambio = async () => {
   try {

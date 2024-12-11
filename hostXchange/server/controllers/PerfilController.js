@@ -5,66 +5,121 @@ const fs = require('fs');
 const path = require('path');
 const saltRounds = 10;
 
+// Configuração base do diretório de upload
+const uploadsDir = path.join(__dirname, '../../public/assets/usuarios');
+
+// Configuração do multer para salvar as imagens
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const userFolder = path.join(uploadsDir, `user_${req.body.userId}`);
+        if (!fs.existsSync(userFolder)) {
+            fs.mkdirSync(userFolder, { recursive: true });
+        }
+        cb(null, userFolder);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname); // Nome único para cada arquivo
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // Limite de 5MB por arquivo
+}).fields([
+    { name: 'fotoPerfil', maxCount: 1 },
+    { name: 'fotoCapa', maxCount: 1 }
+]);
+
 /**
  * @swagger
  * /atualizar-perfil:
  *   post:
- *     summary: Atualiza o perfil do usuário, incluindo dados pessoais e fotos.
- *     description: Este endpoint permite ao usuário atualizar seu perfil, incluindo dados pessoais como nome, e-mail, redes sociais e fotos de perfil/capa. A senha também pode ser alterada se fornecida.
- *     requestBody:
- *       description: Dados para atualizar o perfil do usuário.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userId:
- *                 type: integer
- *                 description: ID do usuário a ser atualizado.
- *               nome:
- *                 type: string
- *                 description: Nome completo do usuário.
- *               email:
- *                 type: string
- *                 description: Endereço de e-mail do usuário.
- *               senha:
- *                 type: string
- *                 description: Nova senha do usuário (opcional).
- *               cpf:
- *                 type: string
- *                 description: CPF do usuário.
- *               rg:
- *                 type: string
- *                 description: RG do usuário.
- *               nrpassa:
- *                 type: string
- *                 description: Número do passaporte do usuário.
- *               facebook:
- *                 type: string
- *                 description: Link do perfil no Facebook.
- *               twitter:
- *                 type: string
- *                 description: Link do perfil no Twitter.
- *               instagram:
- *                 type: string
- *                 description: Link do perfil no Instagram.
- *               linkedin:
- *                 type: string
- *                 description: Link do perfil no LinkedIn.
- *               fotoPerfil:
- *                 type: string
- *                 format: binary
- *                 description: Foto de perfil do usuário (opcional).
- *               fotoCapa:
- *                 type: string
- *                 format: binary
- *                 description: Foto de capa do usuário (opcional).
+ *     summary: Atualizar o perfil completo de um usuário
+ *     description: Atualiza o perfil de um usuário, incluindo nome, email, senha, imagens de perfil e capa.
+ *     operationId: atualizarPerfil
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         description: Dados para atualizar o perfil do usuário.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             userId:
+ *               type: string
+ *               description: ID do usuário.
+ *               example: "12345"
+ *             nome:
+ *               type: string
+ *               description: Nome do usuário.
+ *               example: "João Silva"
+ *             email:
+ *               type: string
+ *               description: E-mail do usuário.
+ *               example: "joao.silva@example.com"
+ *             senha:
+ *               type: string
+ *               description: Senha do usuário.
+ *               example: "senha123"
+ *             cpf:
+ *               type: string
+ *               description: CPF do usuário.
+ *               example: "123.456.789-00"
+ *             rg:
+ *               type: string
+ *               description: RG do usuário.
+ *               example: "12.345.678-9"
+ *             nrpassa:
+ *               type: string
+ *               description: Número do passaporte do usuário.
+ *               example: "AB123456"
+ *             facebook:
+ *               type: string
+ *               description: URL do perfil do Facebook.
+ *               example: "https://www.facebook.com/joaosilva"
+ *             twitter:
+ *               type: string
+ *               description: URL do perfil do Twitter.
+ *               example: "https://twitter.com/joaosilva"
+ *             instagram:
+ *               type: string
+ *               description: URL do perfil do Instagram.
+ *               example: "https://www.instagram.com/joaosilva"
+ *             linkedin:
+ *               type: string
+ *               description: URL do perfil do LinkedIn.
+ *               example: "https://www.linkedin.com/in/joaosilva"
+ *             fotoPerfil:
+ *               type: file
+ *               description: Foto de perfil do usuário.
+ *               required: false
+ *             fotoCapa:
+ *               type: file
+ *               description: Foto de capa do perfil do usuário.
+ *               required: false
  *     responses:
  *       200:
- *         description: Perfil do usuário atualizado com sucesso.
+ *         description: Perfil atualizado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Perfil atualizado com sucesso!'
  *       500:
  *         description: Erro ao atualizar o perfil.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao atualizar perfil!'
  */
 const atualizarPerfil = async (req, res) => {
     upload(req, res, async (err) => {
@@ -116,24 +171,53 @@ const atualizarPerfil = async (req, res) => {
  * @swagger
  * /perfil:
  *   post:
- *     summary: Recupera o perfil do usuário.
- *     description: Este endpoint retorna as informações do perfil de um usuário específico, com base no ID do usuário.
- *     requestBody:
- *       description: Dados para recuperar o perfil do usuário.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               idUser:
- *                 type: integer
- *                 description: ID do usuário cujo perfil será retornado.
+ *     summary: Buscar o perfil de um usuário
+ *     description: Recupera as informações do perfil de um usuário, incluindo suas fotos de perfil e capa.
+ *     operationId: perfil
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         description: Dados para buscar o perfil do usuário.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             idUser:
+ *               type: string
+ *               description: ID do usuário.
+ *               example: "12345"
  *     responses:
  *       200:
- *         description: Perfil do usuário recuperado com sucesso.
+ *         description: Perfil encontrado.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             userId:
+ *               type: string
+ *               example: "12345"
+ *             nome:
+ *               type: string
+ *               example: "João Silva"
+ *             email:
+ *               type: string
+ *               example: "joao.silva@example.com"
+ *             fotoPerfil:
+ *               type: string
+ *               example: "/assets/usuarios/user_12345/filename.jpg"
+ *             fotoCapa:
+ *               type: string
+ *               example: "/assets/usuarios/user_12345/cover.jpg"
  *       500:
- *         description: Erro ao recuperar o perfil.
+ *         description: Erro ao buscar perfil.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao buscar perfil!'
  */
 const perfil = async (req, res) => {
     try {

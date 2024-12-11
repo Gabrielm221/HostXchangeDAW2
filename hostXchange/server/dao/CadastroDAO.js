@@ -3,47 +3,74 @@ const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /usuario:
+ * /usuario/cadastro:
  *   post:
- *     summary: Cadastra um novo usuário.
- *     description: Este endpoint permite cadastrar um novo usuário, incluindo informações como nome, e-mail, CPF, RG, sexo, passaporte e nacionalidade.
- *     requestBody:
- *       description: Dados necessários para cadastrar um novo usuário.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nome:
- *                 type: string
- *                 description: Nome completo do usuário.
- *               email:
- *                 type: string
- *                 description: E-mail do usuário.
- *               password:
- *                 type: string
- *                 description: Senha do usuário.
- *               cpf:
- *                 type: string
- *                 description: CPF do usuário.
- *               rg:
- *                 type: string
- *                 description: RG do usuário.
- *               sexo:
- *                 type: string
- *                 description: Sexo do usuário (M/F).
- *               passaporte:
- *                 type: string
- *                 description: Número do passaporte do usuário.
- *               nacionalidade:
- *                 type: string
- *                 description: Nacionalidade do usuário.
+ *     summary: Cadastro de usuário
+ *     description: Realiza o cadastro de um novo usuário (viajante).
+ *     operationId: cadastroUsuario
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         description: Dados necessários para cadastrar o usuário.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             nome:
+ *               type: string
+ *               description: Nome completo do usuário.
+ *               example: "João da Silva"
+ *             email:
+ *               type: string
+ *               description: Email do usuário.
+ *               example: "joao.silva@gmail.com"
+ *             password:
+ *               type: string
+ *               description: Senha do usuário.
+ *               example: "senha123"
+ *             cpf:
+ *               type: string
+ *               description: CPF do usuário.
+ *               example: "123.456.789-00"
+ *             rg:
+ *               type: string
+ *               description: RG do usuário.
+ *               example: "12.345.678-9"
+ *             sexo:
+ *               type: string
+ *               description: Sexo do usuário.
+ *               example: "M"
+ *             passaporte:
+ *               type: string
+ *               description: Número do passaporte do usuário.
+ *               example: "A1234567"
+ *             nacionalidade:
+ *               type: string
+ *               description: Nacionalidade do usuário.
+ *               example: "Brasileiro"
  *     responses:
  *       200:
- *         description: Usuário cadastrado com sucesso.
+ *         description: Cadastro do usuário realizado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Usuário cadastrado com sucesso!'
  *       500:
- *         description: Erro ao cadastrar usuário.
+ *         description: Erro ao realizar o cadastro.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao cadastrar usuário!'
  */
 const cadastroUsuario = async (nome, email, password, cpf, rg, sexo, passaporte, nacionalidade) => {
   try {
@@ -71,59 +98,90 @@ const cadastroUsuario = async (nome, email, password, cpf, rg, sexo, passaporte,
 
 /**
  * @swagger
- * /host:
+ * /host/cadastro:
  *   post:
- *     summary: Cadastra um novo host.
- *     description: Este endpoint permite cadastrar um novo host, incluindo informações como nome da propriedade, endereço, telefone e localização.
- *     requestBody:
- *       description: Dados necessários para cadastrar uma nova propriedade de host.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nomePropriedade:
- *                 type: string
- *                 description: Nome da propriedade do host.
- *               rua:
- *                 type: string
- *                 description: Rua onde a propriedade está localizada.
- *               numero:
- *                 type: string
- *                 description: Número da propriedade.
- *               complemento:
- *                 type: string
- *                 description: Complemento do endereço.
- *               cidade:
- *                 type: string
- *                 description: Cidade onde a propriedade está localizada.
- *               estado:
- *                 type: string
- *                 description: Estado onde a propriedade está localizada.
- *               cep:
- *                 type: string
- *                 description: CEP da propriedade.
- *               telefone:
- *                 type: string
- *                 description: Número de telefone do host.
- *               tipoPropriedade:
- *                 type: string
- *                 description: Tipo de propriedade do host (ex: Casa, Apartamento).
- *               email:
- *                 type: string
- *                 description: E-mail do host.
- *               latitude:
- *                 type: string
- *                 description: Latitude da localização da propriedade.
- *               longitude:
- *                 type: string
- *                 description: Longitude da localização da propriedade.
+ *     summary: Cadastro de host
+ *     description: Realiza o cadastro de um novo host (proprietário de imóvel).
+ *     operationId: cadastroHost
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         description: Dados necessários para cadastrar o host.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             nomePropriedade:
+ *               type: string
+ *               description: Nome da propriedade (ex: nome do imóvel).
+ *               example: "Casa do João"
+ *             rua:
+ *               type: string
+ *               description: Nome da rua do imóvel.
+ *               example: "Rua das Flores"
+ *             numero:
+ *               type: string
+ *               description: Número da casa ou apartamento.
+ *               example: "123"
+ *             complemento:
+ *               type: string
+ *               description: Complemento do endereço (ex: andar, bloco).
+ *               example: "Bloco A, apto 202"
+ *             cidade:
+ *               type: string
+ *               description: Cidade onde o imóvel está localizado.
+ *               example: "São Paulo"
+ *             estado:
+ *               type: string
+ *               description: Estado onde o imóvel está localizado.
+ *               example: "SP"
+ *             cep:
+ *               type: string
+ *               description: CEP do imóvel.
+ *               example: "01001-000"
+ *             telefone:
+ *               type: string
+ *               description: Número de telefone de contato do host.
+ *               example: "(11) 1234-5678"
+ *             tipoPropriedade:
+ *               type: string
+ *               description: Tipo de propriedade (ex: casa, apartamento).
+ *               example: "Casa"
+ *             email:
+ *               type: string
+ *               description: E-mail de contato do host.
+ *               example: "joao.host@gmail.com"
+ *             latitude:
+ *               type: number
+ *               description: Latitude do imóvel.
+ *               example: -23.550520
+ *             longitude:
+ *               type: number
+ *               description: Longitude do imóvel.
+ *               example: -46.633308
  *     responses:
  *       200:
- *         description: Host cadastrado com sucesso.
+ *         description: Cadastro do host realizado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             idHost:
+ *               type: string
+ *               example: "12345"
  *       500:
- *         description: Erro ao cadastrar host.
+ *         description: Erro ao realizar o cadastro.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao cadastrar host!'
  */
 const cadastroHost = async (nomePropriedade, rua, numero, complemento, cidade, estado, cep, telefone, tipoPropriedade, email, latitude, longitude) => {
   try {
@@ -153,28 +211,50 @@ const cadastroHost = async (nomePropriedade, rua, numero, complemento, cidade, e
 
 /**
  * @swagger
- * /usuario/tipo/{idUsuario}/{idHost}:
+ * /usuario/atualizar-tipo:
  *   put:
- *     summary: Atualiza o tipo de usuário para "Host".
- *     description: Este endpoint permite alterar o tipo de usuário de "Viajante" para "Host", associando-o a um host específico.
+ *     summary: Atualizar tipo de usuário para host
+ *     description: Atualiza o tipo de usuário de "viajante" para "host" após o cadastro do host.
+ *     operationId: updateTipoUsuario
  *     parameters:
- *       - in: path
- *         name: idUsuario
+ *       - in: body
+ *         name: body
+ *         description: Dados necessários para atualizar o tipo de usuário.
  *         required: true
- *         description: ID do usuário a ser atualizado.
  *         schema:
- *           type: integer
- *       - in: path
- *         name: idHost
- *         required: true
- *         description: ID do host ao qual o usuário será associado.
- *         schema:
- *           type: integer
+ *           type: object
+ *           properties:
+ *             idUsuario:
+ *               type: string
+ *               description: ID do usuário a ser atualizado.
+ *               example: "12345"
+ *             idHost:
+ *               type: string
+ *               description: ID do host recém-cadastrado.
+ *               example: "54321"
  *     responses:
  *       200:
- *         description: Tipo de usuário atualizado para "Host".
+ *         description: Tipo de usuário atualizado com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Seu perfil foi atualizado para Host!'
  *       500:
- *         description: Erro ao atualizar tipo de usuário.
+ *         description: Erro ao atualizar o tipo de usuário.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao atualizar tipo do usuário para Host!'
  */
 const updateTipoUsuario = async (idUsuario, idHost) => {
   try {

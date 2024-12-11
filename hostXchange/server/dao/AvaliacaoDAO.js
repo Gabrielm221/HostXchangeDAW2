@@ -3,29 +3,53 @@ const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /avaliacao:
+ * /avaliacao/criar:
  *   post:
- *     summary: Cria uma avaliação para um usuário.
- *     description: Este endpoint cria uma avaliação de um usuário (avaliador) para outro usuário (avaliado). A avaliação inicia com um valor de "snaval" como `false`.
- *     requestBody:
- *       description: Dados para criar uma avaliação.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               avaliadoId:
- *                 type: integer
- *                 description: ID do usuário avaliado.
- *               avaliadorId:
- *                 type: integer
- *                 description: ID do usuário avaliador.
+ *     summary: Criar uma avaliação para um usuário
+ *     description: Cria uma avaliação para o usuário avaliado por outro usuário.
+ *     operationId: criaAvaliacao
+ *     parameters:
+ *       - in: body
+ *         name: body
+ *         description: Dados para criar uma avaliação.
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             avaliadoId:
+ *               type: string
+ *               description: ID do usuário avaliado.
+ *               example: "12345"
+ *             avaliadorId:
+ *               type: string
+ *               description: ID do usuário que está avaliando.
+ *               example: "67890"
  *     responses:
  *       200:
  *         description: Avaliação criada com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Avaliação feita com sucesso!'
+ *             idavaliacao:
+ *               type: string
+ *               example: "1234"
  *       500:
- *         description: Erro ao criar avaliação.
+ *         description: Erro ao criar a avaliação.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao avaliar!'
  */
 const criaAvaliacao = async (avaliadoId, avaliadorId) => {
   try {
@@ -37,7 +61,7 @@ const criaAvaliacao = async (avaliadoId, avaliadorId) => {
         avaliador: {
           connect: { idusuario: avaliadorId }, // Conecta o ID do avaliador
         },
-        snaval: false, // Valor padrão
+        snaval: false, // Default value
       },
     });
 
@@ -50,27 +74,72 @@ const criaAvaliacao = async (avaliadoId, avaliadorId) => {
 
 /**
  * @swagger
- * /avaliacoes/{idusuario}:
+ * /avaliacao/lista:
  *   get:
- *     summary: Lista as avaliações de um usuário.
- *     description: Este endpoint retorna as avaliações feitas a um usuário, seja como avaliador ou avaliado.
+ *     summary: Listar avaliações de um usuário
+ *     description: Retorna as avaliações feitas para ou por um usuário.
+ *     operationId: listaAvaliacoes
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: idusuario
+ *         description: ID do usuário para listar as avaliações.
  *         required: true
- *         description: ID do usuário para recuperar suas avaliações.
  *         schema:
- *           type: integer
+ *           type: string
+ *           example: "12345"
  *     responses:
  *       200:
- *         description: Avaliações encontradas com sucesso.
+ *         description: Avaliações encontradas.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Avaliações encontradas!'
+ *             avaliacoes:
+ *               type: object
+ *               properties:
+ *                 avaliado:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idavaliacao:
+ *                         type: string
+ *                         example: "1234"
+ *                       descricao:
+ *                         type: string
+ *                         example: "Excelente!"
+ *                 avaliador:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idavaliacao:
+ *                         type: string
+ *                         example: "5678"
+ *                       descricao:
+ *                         type: string
+ *                         example: "Bom intercâmbio."
  *       500:
- *         description: Erro ao listar avaliações.
+ *         description: Erro ao listar as avaliações.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao listar avaliações!'
  */
 const listaAvaliacoes = async (idusuario) => {
   try {
-    const avaliado = await prisma.avaliacao.findMany({ where: { avaliadoId: Number(idusuario) }, include: { avaliado: true, avaliador: true } });
-    const avaliador = await prisma.avaliacao.findMany({ where: { avaliadorId: Number(idusuario) }, include: { avaliado: true, avaliador: true } });
+    const avaliado = await prisma.avaliacao.findMany({ where: { avaliadoId: Number(idusuario) }, include: { avaliado: true, avaliador: true }});
+    const avaliador = await prisma.avaliacao.findMany({ where: { avaliadorId: Number(idusuario) }, include: { avaliado: true, avaliador: true }});
 
     if (avaliado.length > 0 || avaliador.length > 0) {
       const avaliacoes = { avaliado, avaliador }; 
@@ -86,36 +155,66 @@ const listaAvaliacoes = async (idusuario) => {
 
 /**
  * @swagger
- * /avaliacao/{idavaliacao}:
+ * /avaliacao/atualizar:
  *   put:
- *     summary: Atualiza uma avaliação existente.
- *     description: Este endpoint permite atualizar uma avaliação, incluindo a descrição e se a avaliação foi finalizada (`snaval`).
+ *     summary: Atualizar uma avaliação existente
+ *     description: Atualiza uma avaliação, incluindo a descrição e a nota.
+ *     operationId: atualizaAvaliacao
  *     parameters:
- *       - in: path
- *         name: idavaliacao
+ *       - in: body
+ *         name: body
+ *         description: Dados para atualizar uma avaliação.
  *         required: true
- *         description: ID da avaliação a ser atualizada.
  *         schema:
- *           type: integer
- *     requestBody:
- *       description: Dados para atualizar a avaliação.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               avaliacao:
- *                 type: integer
- *                 description: Nota da avaliação (geralmente de 0 a 5).
- *               descricao:
- *                 type: string
- *                 description: Descrição da avaliação.
+ *           type: object
+ *           properties:
+ *             idavaliacao:
+ *               type: string
+ *               description: ID da avaliação a ser atualizada.
+ *               example: "1234"
+ *             avaliacao:
+ *               type: integer
+ *               description: Nova nota da avaliação.
+ *               example: 4
+ *             descricao:
+ *               type: string
+ *               description: Nova descrição da avaliação.
+ *               example: "Muito bom, mas poderia melhorar."
  *     responses:
  *       200:
  *         description: Avaliação atualizada com sucesso.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: true
+ *             message:
+ *               type: string
+ *               example: 'Avaliação atualizada com sucesso!'
+ *             avaliacaoAtualizada:
+ *               type: object
+ *               properties:
+ *                 idavaliacao:
+ *                   type: string
+ *                   example: "1234"
+ *                 avaliacao:
+ *                   type: integer
+ *                   example: 4
+ *                 descricao:
+ *                   type: string
+ *                   example: "Muito bom, mas poderia melhorar."
  *       500:
- *         description: Erro ao atualizar avaliação.
+ *         description: Erro ao atualizar a avaliação.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             blOk:
+ *               type: boolean
+ *               example: false
+ *             message:
+ *               type: string
+ *               example: 'Erro ao atualizar avaliação!'
  */
 const atualizaAvaliacao = async (idavaliacao, avaliacao, descricao) => {
   try {

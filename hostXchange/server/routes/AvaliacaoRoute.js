@@ -4,10 +4,11 @@ const router = express.Router();
 
 /**
  * @swagger
- * /avaliacao/criaAvaliacao:
+ * /avaliacoes/criaAvaliacao:
  *   post:
- *     summary: Criar uma nova avaliação.
- *     description: Este endpoint permite criar uma nova avaliação para um usuário.
+ *     summary: Criar uma nova avaliação
+ *     description: Cria uma avaliação associando um avaliador e um avaliado, com a opção de definir uma avaliação inicial.
+ *     operationId: criaAvaliacao
  *     requestBody:
  *       required: true
  *       content:
@@ -17,16 +18,10 @@ const router = express.Router();
  *             properties:
  *               avaliadoId:
  *                 type: integer
- *                 description: ID do usuário que está sendo avaliado.
+ *                 example: 1
  *               avaliadorId:
  *                 type: integer
- *                 description: ID do usuário que está realizando a avaliação.
- *               avaliacao:
- *                 type: integer
- *                 description: Nota de avaliação (por exemplo, 1-5).
- *               descricao:
- *                 type: string
- *                 description: Descrição da avaliação (opcional).
+ *                 example: 2
  *     responses:
  *       200:
  *         description: Avaliação criada com sucesso.
@@ -37,24 +32,24 @@ const router = express.Router();
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Indicador de sucesso.
+ *                   example: true
  *                 message:
  *                   type: string
- *                   description: Mensagem de sucesso.
- *                 idavaliacao:
- *                   type: integer
- *                   description: ID da avaliação criada.
+ *                   example: "Avaliação feita com sucesso!"
  *       400:
+ *         description: Dados inválidos ou ausentes.
+ *       500:
  *         description: Erro ao criar avaliação.
  */
 router.post('/criaAvaliacao', avaliacao.criaAvaliacao);
 
 /**
  * @swagger
- * /avaliacao/listaAvaliacoes:
+ * /avaliacoes/listaAvaliacoes:
  *   post:
- *     summary: Listar todas as avaliações de um usuário.
- *     description: Este endpoint permite listar todas as avaliações feitas para ou por um usuário.
+ *     summary: Listar avaliações de um usuário
+ *     description: Retorna todas as avaliações feitas sobre um usuário e as feitas por ele.
+ *     operationId: listaAvaliacoes
  *     requestBody:
  *       required: true
  *       content:
@@ -64,10 +59,10 @@ router.post('/criaAvaliacao', avaliacao.criaAvaliacao);
  *             properties:
  *               idusuario:
  *                 type: integer
- *                 description: ID do usuário para listar suas avaliações.
+ *                 example: 1
  *     responses:
  *       200:
- *         description: Avaliações listadas com sucesso.
+ *         description: Avaliações encontradas com sucesso.
  *         content:
  *           application/json:
  *             schema:
@@ -75,38 +70,49 @@ router.post('/criaAvaliacao', avaliacao.criaAvaliacao);
  *               properties:
  *                 blOk:
  *                   type: boolean
- *                   description: Indicador de sucesso.
+ *                   example: true
  *                 message:
  *                   type: string
- *                   description: Mensagem de sucesso.
+ *                   example: "Avaliações encontradas!"
  *                 avaliacoes:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       avaliadoId:
- *                         type: integer
- *                         description: ID do usuário avaliado.
- *                       avaliadorId:
- *                         type: integer
- *                         description: ID do avaliador.
- *                       avaliacao:
- *                         type: integer
- *                         description: Nota dada pelo avaliador.
- *                       descricao:
- *                         type: string
- *                         description: Descrição da avaliação.
- *       400:
+ *                   type: object
+ *                   properties:
+ *                     avaliado:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           avaliacao:
+ *                             type: number
+ *                             example: 5
+ *                           descricao:
+ *                             type: string
+ *                             example: "Excelente!"
+ *                     avaliador:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           avaliacao:
+ *                             type: number
+ *                             example: 4
+ *                           descricao:
+ *                             type: string
+ *                             example: "Bom desempenho!"
+ *       404:
+ *         description: Nenhuma avaliação encontrada.
+ *       500:
  *         description: Erro ao listar avaliações.
  */
 router.post('/listaAvaliacoes', avaliacao.listaAvaliacoes);
 
 /**
  * @swagger
- * /avaliacao/atualizaAvaliacao:
+ * /avaliacoes/atualizaAvaliacao:
  *   post:
- *     summary: Atualizar uma avaliação existente.
- *     description: Este endpoint permite atualizar uma avaliação existente de um usuário.
+ *     summary: Atualizar uma avaliação existente
+ *     description: Atualiza a avaliação de um usuário, incluindo a descrição e o status da avaliação.
+ *     operationId: atualizaAvaliacao
  *     requestBody:
  *       required: true
  *       content:
@@ -116,13 +122,16 @@ router.post('/listaAvaliacoes', avaliacao.listaAvaliacoes);
  *             properties:
  *               idavaliacao:
  *                 type: integer
- *                 description: ID da avaliação a ser atualizada.
+ *                 example: 1
  *               avaliacao:
  *                 type: integer
- *                 description: Nota de avaliação atualizada.
+ *                 example: 5
  *               descricao:
  *                 type: string
- *                 description: Descrição atualizada da avaliação.
+ *                 example: "Avaliação excelente!"
+ *               snaval:
+ *                 type: boolean
+ *                 example: true
  *     responses:
  *       200:
  *         description: Avaliação atualizada com sucesso.
@@ -133,11 +142,15 @@ router.post('/listaAvaliacoes', avaliacao.listaAvaliacoes);
  *               properties:
  *                 blOk:
  *                   type: boolean
- *                   description: Indicador de sucesso.
+ *                   example: true
  *                 message:
  *                   type: string
- *                   description: Mensagem de sucesso.
+ *                   example: "Avaliação atualizada com sucesso!"
  *       400:
+ *         description: Dados inválidos ou ausentes.
+ *       404:
+ *         description: Avaliação não encontrada.
+ *       500:
  *         description: Erro ao atualizar avaliação.
  */
 router.post('/atualizaAvaliacao', avaliacao.atualizaAvaliacao);

@@ -3,17 +3,19 @@ const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /usuario/{idusuario}:
+ * /usuarios/{idusuario}:
  *   get:
- *     summary: Buscar usuário pelo ID.
- *     description: Este endpoint permite buscar informações de um usuário pelo seu ID.
+ *     summary: Buscar usuário
+ *     description: Retorna as informações de um usuário com base no ID fornecido.
+ *     operationId: buscarUsuario
  *     parameters:
- *       - name: idusuario
- *         in: path
- *         description: ID do usuário.
+ *       - in: path
+ *         name: idusuario
  *         required: true
+ *         description: ID do usuário a ser buscado.
  *         schema:
  *           type: integer
+ *           example: 1
  *     responses:
  *       200:
  *         description: Usuário encontrado.
@@ -24,17 +26,17 @@ const prisma = new PrismaClient();
  *               properties:
  *                 idusuario:
  *                   type: integer
- *                   description: ID do usuário.
+ *                   example: 1
  *                 nome:
  *                   type: string
- *                   description: Nome do usuário.
+ *                   example: "João da Silva"
  *                 email:
  *                   type: string
- *                   description: E-mail do usuário.
+ *                   example: "joao.silva@email.com"
  *       404:
  *         description: Usuário não encontrado.
  *       500:
- *         description: Erro ao buscar usuário.
+ *         description: Erro ao buscar o usuário.
  */
 const buscarUsuario = async (idusuario) => {
   try {
@@ -48,17 +50,19 @@ const buscarUsuario = async (idusuario) => {
 
 /**
  * @swagger
- * /intercambio/{idinterc}:
+ * /intercambios/{idinterc}:
  *   get:
- *     summary: Buscar intercâmbio pelo ID.
- *     description: Este endpoint permite buscar um intercâmbio pelo seu ID.
+ *     summary: Buscar intercâmbio
+ *     description: Retorna as informações de um intercâmbio com base no ID fornecido.
+ *     operationId: buscarIntercambio
  *     parameters:
- *       - name: idinterc
- *         in: path
- *         description: ID do intercâmbio.
+ *       - in: path
+ *         name: idinterc
  *         required: true
+ *         description: ID do intercâmbio a ser buscado.
  *         schema:
  *           type: integer
+ *           example: 1
  *     responses:
  *       200:
  *         description: Intercâmbio encontrado.
@@ -69,13 +73,13 @@ const buscarUsuario = async (idusuario) => {
  *               properties:
  *                 idinterc:
  *                   type: integer
- *                   description: ID do intercâmbio.
+ *                   example: 1
  *                 titulo:
  *                   type: string
- *                   description: Título do intercâmbio.
+ *                   example: "Intercâmbio na praia"
  *                 descricao:
  *                   type: string
- *                   description: Descrição do intercâmbio.
+ *                   example: "Desfrute de um intercâmbio relaxante na praia."
  *       404:
  *         description: Intercâmbio não encontrado.
  *       500:
@@ -93,10 +97,11 @@ const buscarIntercambio = async (idinterc) => {
 
 /**
  * @swagger
- * /match:
+ * /matches:
  *   post:
- *     summary: Criar um match entre um viajante e um intercâmbio.
- *     description: Este endpoint cria um vínculo (match) entre um viajante e um intercâmbio, permitindo o relacionamento entre eles.
+ *     summary: Criar match
+ *     description: Cria um match (vínculo) entre um viajante e um intercâmbio.
+ *     operationId: criarMatch
  *     requestBody:
  *       required: true
  *       content:
@@ -106,10 +111,10 @@ const buscarIntercambio = async (idinterc) => {
  *             properties:
  *               idviajante:
  *                 type: integer
- *                 description: ID do viajante.
+ *                 example: 1
  *               idinterc:
  *                 type: integer
- *                 description: ID do intercâmbio.
+ *                 example: 1
  *     responses:
  *       200:
  *         description: Match criado com sucesso.
@@ -120,12 +125,15 @@ const buscarIntercambio = async (idinterc) => {
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Indicador de sucesso da operação.
+ *                   example: true
  *                 match:
  *                   type: object
- *                   description: Dados do match criado.
- *       400:
- *         description: Dados inválidos ou erro ao criar o match.
+ *                   properties:
+ *                     idmatch:
+ *                       type: integer
+ *                       example: 1
+ *       500:
+ *         description: Erro ao criar match.
  */
 const criarMatch = async (idviajante, idinterc) => {
   try {
@@ -144,10 +152,11 @@ const criarMatch = async (idviajante, idinterc) => {
 
 /**
  * @swagger
- * /avaliacao:
+ * /avaliacoes:
  *   post:
- *     summary: Criar uma avaliação.
- *     description: Este endpoint permite criar uma avaliação para um intercâmbio realizado, com informações do avaliador, avaliado, descrição e avaliação numérica.
+ *     summary: Criar avaliação
+ *     description: Cria uma avaliação de um intercâmbio feita por um avaliador.
+ *     operationId: criarAvaliacao
  *     requestBody:
  *       required: true
  *       content:
@@ -157,19 +166,19 @@ const criarMatch = async (idviajante, idinterc) => {
  *             properties:
  *               avaliadoId:
  *                 type: integer
- *                 description: ID do usuário avaliado.
+ *                 example: 1
  *               avaliadorId:
  *                 type: integer
- *                 description: ID do usuário avaliador.
+ *                 example: 2
  *               avaliacao:
  *                 type: integer
- *                 description: Nota dada pelo avaliador.
+ *                 example: 5
  *               descricao:
  *                 type: string
- *                 description: Descrição da avaliação.
+ *                 example: "Ótima experiência, recomendo!"
  *               snaval:
  *                 type: boolean
- *                 description: Status da avaliação (se foi completada).
+ *                 example: true
  *     responses:
  *       200:
  *         description: Avaliação criada com sucesso.
@@ -180,12 +189,15 @@ const criarMatch = async (idviajante, idinterc) => {
  *               properties:
  *                 success:
  *                   type: boolean
- *                   description: Indicador de sucesso da operação.
+ *                   example: true
  *                 avaliacao:
  *                   type: object
- *                   description: Dados da avaliação criada.
- *       400:
- *         description: Dados inválidos ou erro ao criar avaliação.
+ *                   properties:
+ *                     idavaliacao:
+ *                       type: integer
+ *                       example: 1
+ *       500:
+ *         description: Erro ao criar avaliação.
  */
 const criarAvaliacao = async ({ avaliadoId, avaliadorId, avaliacao, descricao, snaval }) => {
   try {

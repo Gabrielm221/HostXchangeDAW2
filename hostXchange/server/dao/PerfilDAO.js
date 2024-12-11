@@ -5,17 +5,84 @@ const saltRounds = 10;
 
 /**
  * @swagger
- * /usuario/{userId}/perfil:
- *   put:
- *     summary: Atualizar o perfil do usuário.
- *     description: Este endpoint permite atualizar os dados do perfil do usuário, incluindo a senha (se fornecida).
+ * /usuarios/{userId}:
+ *   get:
+ *     summary: Buscar perfil de usuário
+ *     description: Retorna as informações de um usuário com base no ID fornecido, incluindo os dados do host se disponíveis.
+ *     operationId: perfil
  *     parameters:
- *       - name: userId
- *         in: path
- *         description: ID do usuário.
+ *       - in: path
+ *         name: userId
  *         required: true
+ *         description: ID do usuário para buscar o perfil.
  *         schema:
  *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Perfil do usuário encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 blOk:
+ *                   type: boolean
+ *                   example: true
+ *                 dados:
+ *                   type: object
+ *                   properties:
+ *                     idusuario:
+ *                       type: integer
+ *                       example: 1
+ *                     nome:
+ *                       type: string
+ *                       example: "João da Silva"
+ *                     email:
+ *                       type: string
+ *                       example: "joao.silva@email.com"
+ *                     contatoHost:
+ *                       type: object
+ *                       properties:
+ *                         nmprop:
+ *                           type: string
+ *                           example: "Casa na praia"
+ *                         cidade:
+ *                           type: string
+ *                           example: "Rio de Janeiro"
+ *       404:
+ *         description: Perfil não encontrado.
+ *       500:
+ *         description: Erro ao buscar o perfil.
+ */
+const perfil = async (userId) => {
+  try {
+    const dados = await prisma.usuario.findUnique({
+      where: { idusuario: parseInt(userId) }, include: { contatoHost: true }
+    });
+
+    return { blOk: true, dados };
+  } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
+    throw error;
+  }
+};
+
+/**
+ * @swagger
+ * /usuarios/{userId}:
+ *   put:
+ *     summary: Atualizar perfil de usuário
+ *     description: Atualiza as informações do perfil do usuário com base no ID fornecido.
+ *     operationId: atualizarPerfil
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: ID do usuário a ser atualizado.
+ *         schema:
+ *           type: integer
+ *           example: 1
  *     requestBody:
  *       required: true
  *       content:
@@ -25,28 +92,13 @@ const saltRounds = 10;
  *             properties:
  *               nome:
  *                 type: string
- *                 description: Nome do usuário.
+ *                 example: "João da Silva"
  *               email:
  *                 type: string
- *                 description: E-mail do usuário.
+ *                 example: "joao.silva@email.com"
  *               senha:
  *                 type: string
- *                 description: Nova senha do usuário (se for atualizar).
- *               cpf:
- *                 type: string
- *                 description: CPF do usuário.
- *               rg:
- *                 type: string
- *                 description: RG do usuário.
- *               sexo:
- *                 type: string
- *                 description: Sexo do usuário.
- *               passaporte:
- *                 type: string
- *                 description: Número do passaporte do usuário.
- *               nacionalidade:
- *                 type: string
- *                 description: Nacionalidade do usuário.
+ *                 example: "novaSenha123"
  *     responses:
  *       200:
  *         description: Perfil atualizado com sucesso.
@@ -57,12 +109,16 @@ const saltRounds = 10;
  *               properties:
  *                 blOk:
  *                   type: boolean
- *                   description: Indicador de sucesso da operação.
+ *                   example: true
  *                 message:
  *                   type: string
- *                   description: Mensagem de sucesso.
+ *                   example: "Perfil atualizado!"
  *       400:
- *         description: Erro ao atualizar perfil.
+ *         description: Dados inválidos.
+ *       404:
+ *         description: Usuário não encontrado.
+ *       500:
+ *         description: Erro ao atualizar o perfil.
  */
 const atualizarPerfil = async (userId, data) => {
   try {
@@ -78,50 +134,5 @@ const atualizarPerfil = async (userId, data) => {
     throw error;
   }
 };
-
-/**
- * @swagger
- * /usuario/{userId}/perfil:
- *   get:
- *     summary: Obter o perfil do usuário.
- *     description: Este endpoint retorna as informações do perfil do usuário, incluindo detalhes de contato.
- *     parameters:
- *       - name: userId
- *         in: path
- *         description: ID do usuário.
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Perfil do usuário encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 blOk:
- *                   type: boolean
- *                   description: Indicador de sucesso da operação.
- *                 dados:
- *                   type: object
- *                   description: Dados do perfil do usuário, incluindo informações de contato.
- *       404:
- *         description: Usuário não encontrado.
- *       500:
- *         description: Erro ao buscar perfil do usuário.
- */
-const perfil = async (userId) => {
-  try {
-    const dados = await prisma.usuario.findUnique({
-      where: { idusuario: parseInt(userId) }, include: {contatoHost: true }
-    });
-
-    return { blOk: true, dados };
-  } catch (error) {
-    console.error('Erro ao buscar perfil:', error);
-    throw error;
-  }
-}
 
 module.exports = { atualizarPerfil, perfil };
