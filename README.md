@@ -1,10 +1,11 @@
                                 # Projeto  - HostXChange
-# Integrantes: Ranieri Massini, Gabriel Marçal Pereira Leal, Jose Marcolino.
-# Disciplina: DAW 2
-# Professor: Lídia Bononi
-# Instaladores
-NodeJs
+Integrantes: Ranieri Massini, Gabriel Marçal Pereira Leal, Jose Marcolino.
+Disciplina: DAW 2
+Professor: Lídia Bononi
 
+# Instaladores
+
+NodeJs
 Angular: npm install -g @angular/cli@18.2.0
 
 # Para rodar
@@ -22,5 +23,5 @@ Frontend:
 Na pasta principal rodar ng s ou ng server.
 
 
-Requisitos :
+# Requisitos :
 Leia RequisitosHostX.pdf
