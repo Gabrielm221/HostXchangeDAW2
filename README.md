@@ -1,10 +1,10 @@
                                     # Projeto  - HostXChange
 
-### Integrantes: João Gabriel, Joice Cristina, Luis Alberto, Ranieri Massini.
+### Integrantes: Ranieri Massini, Gabriel Marçal Pereira Leal, Jose Marcolino.
 
-### Disciplina: Laboratório de Engenharia de Software
+### Disciplina: DAW 2
 
-### Professor: Mauro Borges
+### Professor: Lídia Bononi
 
 ## Instaladores
 
