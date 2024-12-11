@@ -1,0 +1,21 @@
+<nav class="navbar">
+  <div class="navbar-logo">
+    <a href="/home">
+      <img src="assets/images/menu-footer/logo.jpeg" alt="Logo">
+      <span>HostXchange</span>
+    </a>
+  </div>
+  <div class="navbar-links">
+    <button *ngIf="logado == false" (click)="login()">Entrar</button>
+    <a *ngIf="logado && tipo_user === 'V'" href="/tornar-host">
+      <button>Tornar-se Host</button>
+    </a>
+
+    <button *ngIf="logado == true" (click)="logout()">Sair</button>
+
+    <!-- Ícone de perfil que redireciona para a página de perfil -->
+    <a *ngIf="logado == true" href="/perfil" class="profile-icon border-4 btn btn-outline-light ms-3">
+      <i class="fa fa-user"></i>
+    </a>
+  </div>
+</nav>

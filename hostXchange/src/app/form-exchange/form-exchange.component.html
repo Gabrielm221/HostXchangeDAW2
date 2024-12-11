@@ -1,0 +1,61 @@
+<app-menu></app-menu>
+
+<main class="py-5">
+    <header class="text-center mb-5">
+        <h1>Cadastrar Novo Intercâmbio</h1>
+        <p class="lead">Preencha os detalhes abaixo para cadastrar seu intercâmbio.</p>
+    </header>
+
+    <form [formGroup]="formExchange" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="form">
+        <!-- Imagem -->
+        <div class="form-group mb-4">
+            <label for="localImage" class="form-label">Imagens do Local:<span class="text-danger"> *</span></label>
+            <input type="file" id="localImage" (change)="onFileChange($event)" accept="image/*" multiple class="form-control">
+            <small class="text-muted">Você pode selecionar até 10 imagens.</small>
+        </div>
+
+        <!-- Pré Visualização das Imagens -->
+        <!-- <div class="form-group mb-4">
+            <label for="localImage" class="form-label">Pré-visualização:</label>
+            <div class="preview-container">
+                <img *ngFor="let image of selectedImages" //[src]="image | filePreview" class="preview-image">
+            </div>
+        </div> -->
+    
+        <!-- Título -->
+        <div class="form-group mb-4">
+            <label for="titulo" class="form-label">Título do Card:<span class="text-danger"> *</span></label>
+            <input type="text" id="titulo" formControlName="titulo" placeholder="Título do Card" class="form-control">
+        </div>
+    
+        <!-- Descrição -->
+        <div class="form-group mb-4">
+            <label for="descricao" class="form-label">Descrição:<span class="text-danger"> *</span></label>
+            <textarea id="descricao" formControlName="descricao" placeholder="Descrição da Viagem" class="form-control" rows="4"></textarea>
+        </div>
+    
+        <!-- Serviços -->
+        <div class="form-group mb-4">
+            <label for="servicos" class="form-label">Serviços:<span class="text-danger"> *</span></label>
+            <input type="text" id="servicos" formControlName="servicos" placeholder="Serviços (Ex.: Agricultura, Cozinha)" class="form-control">
+        </div>
+    
+        <!-- Benefícios -->
+        <div class="form-group mb-4">
+            <label for="beneficios" class="form-label">Benefícios:<span class="text-danger"> *</span></label>
+            <input type="text" id="beneficios" formControlName="beneficios" placeholder="O que o Host oferece (Ex.: Alojamento, Alimentação)" class="form-control">
+        </div>
+    
+        <!-- Duração -->
+        <div class="form-group mb-4">
+            <label for="duracao" class="form-label">Duração:<span class="text-danger"> *</span></label>
+            <input type="text" id="duracao" formControlName="duracao" placeholder="Duração do trabalho (Ex.: 2 semanas)" class="form-control">
+        </div>
+    
+        <!-- Botão de Submissão -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary" [disabled]="formExchange.invalid">Cadastrar Intercâmbio</button>
+        </div>
+    </form>
+</main>
+<app-footer></app-footer>
