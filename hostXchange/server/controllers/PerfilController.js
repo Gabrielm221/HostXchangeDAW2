@@ -5,32 +5,67 @@ const fs = require('fs');
 const path = require('path');
 const saltRounds = 10;
 
-// Configuração base do diretório de upload
-const uploadsDir = path.join(__dirname, '../../public/assets/usuarios');
-
-// Configuração do multer para salvar as imagens
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const userFolder = path.join(uploadsDir, `user_${req.body.userId}`);
-        if (!fs.existsSync(userFolder)) {
-            fs.mkdirSync(userFolder, { recursive: true });
-        }
-        cb(null, userFolder);
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname); // Nome único para cada arquivo
-    }
-});
-
-const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // Limite de 5MB por arquivo
-}).fields([
-    { name: 'fotoPerfil', maxCount: 1 },
-    { name: 'fotoCapa', maxCount: 1 }
-]);
-
-// Função para atualizar o perfil completo do usuário
+/**
+ * @swagger
+ * /atualizar-perfil:
+ *   post:
+ *     summary: Atualiza o perfil do usuário, incluindo dados pessoais e fotos.
+ *     description: Este endpoint permite ao usuário atualizar seu perfil, incluindo dados pessoais como nome, e-mail, redes sociais e fotos de perfil/capa. A senha também pode ser alterada se fornecida.
+ *     requestBody:
+ *       description: Dados para atualizar o perfil do usuário.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *                 description: ID do usuário a ser atualizado.
+ *               nome:
+ *                 type: string
+ *                 description: Nome completo do usuário.
+ *               email:
+ *                 type: string
+ *                 description: Endereço de e-mail do usuário.
+ *               senha:
+ *                 type: string
+ *                 description: Nova senha do usuário (opcional).
+ *               cpf:
+ *                 type: string
+ *                 description: CPF do usuário.
+ *               rg:
+ *                 type: string
+ *                 description: RG do usuário.
+ *               nrpassa:
+ *                 type: string
+ *                 description: Número do passaporte do usuário.
+ *               facebook:
+ *                 type: string
+ *                 description: Link do perfil no Facebook.
+ *               twitter:
+ *                 type: string
+ *                 description: Link do perfil no Twitter.
+ *               instagram:
+ *                 type: string
+ *                 description: Link do perfil no Instagram.
+ *               linkedin:
+ *                 type: string
+ *                 description: Link do perfil no LinkedIn.
+ *               fotoPerfil:
+ *                 type: string
+ *                 format: binary
+ *                 description: Foto de perfil do usuário (opcional).
+ *               fotoCapa:
+ *                 type: string
+ *                 format: binary
+ *                 description: Foto de capa do usuário (opcional).
+ *     responses:
+ *       200:
+ *         description: Perfil do usuário atualizado com sucesso.
+ *       500:
+ *         description: Erro ao atualizar o perfil.
+ */
 const atualizarPerfil = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {
@@ -77,6 +112,29 @@ const atualizarPerfil = async (req, res) => {
     });
 };
 
+/**
+ * @swagger
+ * /perfil:
+ *   post:
+ *     summary: Recupera o perfil do usuário.
+ *     description: Este endpoint retorna as informações do perfil de um usuário específico, com base no ID do usuário.
+ *     requestBody:
+ *       description: Dados para recuperar o perfil do usuário.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idUser:
+ *                 type: integer
+ *                 description: ID do usuário cujo perfil será retornado.
+ *     responses:
+ *       200:
+ *         description: Perfil do usuário recuperado com sucesso.
+ *       500:
+ *         description: Erro ao recuperar o perfil.
+ */
 const perfil = async (req, res) => {
     try {
         const { idUser } = req.body;

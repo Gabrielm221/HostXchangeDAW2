@@ -1,6 +1,61 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * /intercambios:
+ *   get:
+ *     summary: Listar intercâmbios disponíveis.
+ *     description: Este endpoint permite listar os intercâmbios disponíveis, incluindo informações sobre os hosts, localização e média das avaliações.
+ *     responses:
+ *       200:
+ *         description: Intercâmbios listados com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 blOk:
+ *                   type: boolean
+ *                   description: Indicador de sucesso da operação.
+ *                 message:
+ *                   type: string
+ *                   description: Mensagem de sucesso ou erro.
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID do intercâmbio.
+ *                       titulo:
+ *                         type: string
+ *                         description: Título do intercâmbio.
+ *                       descricao:
+ *                         type: string
+ *                         description: Descrição do intercâmbio.
+ *                       latitude:
+ *                         type: number
+ *                         format: float
+ *                         description: Latitude da localização do host.
+ *                       longitude:
+ *                         type: number
+ *                         format: float
+ *                         description: Longitude da localização do host.
+ *                       cidade:
+ *                         type: string
+ *                         description: Cidade onde o intercâmbio ocorre.
+ *                       estado:
+ *                         type: string
+ *                         description: Estado onde o intercâmbio ocorre.
+ *                       avaliacao:
+ *                         type: number
+ *                         format: float
+ *                         description: Média das avaliações do host, arredondada para 1 casa decimal.
+ *       500:
+ *         description: Erro ao listar intercâmbios.
+ */
 const listaIntercambio = async () => {
   try {
       const buscaIntercambio = await prisma.intercambio.findMany({

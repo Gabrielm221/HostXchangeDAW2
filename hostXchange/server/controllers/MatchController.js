@@ -1,5 +1,33 @@
 const matchDao = require('../dao/MatchDAO');
 
+/**
+ * @swagger
+ * /criar-match:
+ *   post:
+ *     summary: Cria um vínculo (match) entre um viajante e um intercâmbio
+ *     description: Este endpoint cria um vínculo entre um viajante e um intercâmbio, verificando a existência do usuário e do intercâmbio antes de realizar a criação. Também cria avaliações padrão para ambos.
+ *     requestBody:
+ *       description: Dados necessários para criar o match entre o viajante e o intercâmbio.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idviajante:
+ *                 type: integer
+ *                 description: ID do viajante que está criando o match.
+ *               idinterc:
+ *                 type: integer
+ *                 description: ID do intercâmbio para o qual o match está sendo criado.
+ *     responses:
+ *       201:
+ *         description: Vínculo criado com sucesso entre o viajante e o intercâmbio, com avaliações padrão criadas.
+ *       404:
+ *         description: Usuário ou intercâmbio não encontrado.
+ *       500:
+ *         description: Erro ao criar vínculo ou avaliações.
+ */
 const criarMatch = async (req, res) => {
   const { idviajante, idinterc } = req.body;
 

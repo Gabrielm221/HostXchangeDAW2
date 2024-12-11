@@ -1,5 +1,31 @@
+// Importa o DAO de Avaliação para interagir com o banco de dados
 const avaliacaoDAO = require('../dao/AvaliacaoDAO');
 
+/**
+ * @swagger
+ * /avaliacao:
+ *   post:
+ *     summary: Cria uma nova avaliação
+ *     description: Cria uma avaliação entre o usuário avaliado e o avaliador.
+ *     parameters:
+ *       - name: avaliado
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             avaliado:
+ *               type: integer
+ *               description: ID do usuário avaliado
+ *             avaliador:
+ *               type: integer
+ *               description: ID do usuário avaliador
+ *     responses:
+ *       201:
+ *         description: Avaliação criada com sucesso
+ *       500:
+ *         description: Erro ao salvar a avaliação
+ */
 const criaAvaliacao = async (req, res) => {
     const { avaliado, avaliador } = req.body;
     try {
@@ -14,6 +40,24 @@ const criaAvaliacao = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /avaliacao/{idUser}:
+ *   get:
+ *     summary: Lista as avaliações de um usuário
+ *     description: Retorna todas as avaliações de um usuário e calcula a média.
+ *     parameters:
+ *       - name: idUser
+ *         in: body
+ *         required: true
+ *         type: integer
+ *         description: ID do usuário
+ *     responses:
+ *       200:
+ *         description: Lista de avaliações com a média calculada
+ *       500:
+ *         description: Erro ao listar as avaliações
+ */
 const listaAvaliacoes = async (req, res) => {
     const { idUser } = req.body;
 
@@ -21,11 +65,9 @@ const listaAvaliacoes = async (req, res) => {
         const result = await avaliacaoDAO.listaAvaliacoes(idUser);
         if (result.blOk === true) {
             const avaliacoesValidas = result.avaliacoes.avaliado.filter(m => m.snaval === true).map(m => m.avaliacao); 
-        
-            // Calcula a média das avaliações válidas
             const media = avaliacoesValidas.length > 0
                 ? avaliacoesValidas.reduce((soma, valor) => soma + valor, 0) / avaliacoesValidas.length
-                : 0; 
+                : 0;
             result.avaliacoes.media = media;
         }
         res.status(200).json(result);
@@ -35,6 +77,34 @@ const listaAvaliacoes = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /avaliacao:
+ *   put:
+ *     summary: Atualiza uma avaliação existente
+ *     description: Atualiza os detalhes de uma avaliação existente.
+ *     parameters:
+ *       - name: idavaliacao
+ *         in: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             idavaliacao:
+ *               type: integer
+ *               description: ID da avaliação a ser atualizada
+ *             avaliacao:
+ *               type: integer
+ *               description: Nova nota de avaliação
+ *             descricao:
+ *               type: string
+ *               description: Descrição adicional para a avaliação
+ *     responses:
+ *       200:
+ *         description: Avaliação atualizada com sucesso
+ *       500:
+ *         description: Erro ao atualizar a avaliação
+ */
 const atualizaAvaliacao = async (req, res) => {
     const { idavaliacao, avaliacao, descricao } = req.body;
 
@@ -47,4 +117,5 @@ const atualizaAvaliacao = async (req, res) => {
     }
 };
 
+// Exporta as funções para serem usadas em outras partes da aplicação
 module.exports = { criaAvaliacao, listaAvaliacoes, atualizaAvaliacao };

@@ -25,6 +25,18 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // Limite de 5MB por arquivo
 }).array('images', 10); // Até 10 arquivos no campo 'images'
 
+/**
+ * @swagger
+ * /intercambios:
+ *   get:
+ *     summary: Buscar todos os intercâmbios
+ *     description: Retorna uma lista de todos os intercâmbios cadastrados no sistema.
+ *     responses:
+ *       200:
+ *         description: Lista de intercâmbios encontrada com sucesso
+ *       500:
+ *         description: Erro ao buscar intercâmbios
+ */
 const buscar = async (req, res) => {
     try {
         const intercambios = await intercambiosDAO.buscar();
@@ -36,6 +48,27 @@ const buscar = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /intercambios/{id}:
+ *   get:
+ *     summary: Buscar intercâmbio por ID
+ *     description: Retorna um intercâmbio específico pelo seu ID.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID do intercâmbio
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Intercâmbio encontrado com sucesso
+ *       404:
+ *         description: Intercâmbio não encontrado
+ *       500:
+ *         description: Erro ao buscar intercâmbio por ID
+ */
 const buscarPorId = async (req, res) => {
     try {
         const { id } = req.params; // Pega o ID da URL
@@ -52,6 +85,69 @@ const buscarPorId = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /intercambios:
+ *   post:
+ *     summary: Cadastrar um novo intercâmbio
+ *     description: Cadastra um novo intercâmbio com imagens e detalhes fornecidos.
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - name: nmlocal
+ *         in: body
+ *         required: true
+ *         description: Nome do local do intercâmbio
+ *         schema:
+ *           type: string
+ *       - name: titulo
+ *         in: body
+ *         required: true
+ *         description: Título do intercâmbio
+ *         schema:
+ *           type: string
+ *       - name: descricao
+ *         in: body
+ *         required: true
+ *         description: Descrição do intercâmbio
+ *         schema:
+ *           type: string
+ *       - name: servicos
+ *         in: body
+ *         required: true
+ *         description: Serviços inclusos no intercâmbio
+ *         schema:
+ *           type: string
+ *       - name: beneficios
+ *         in: body
+ *         required: true
+ *         description: Benefícios oferecidos no intercâmbio
+ *         schema:
+ *           type: string
+ *       - name: duracao
+ *         in: body
+ *         required: true
+ *         description: Duração do intercâmbio
+ *         schema:
+ *           type: string
+ *       - name: idhost
+ *         in: body
+ *         required: true
+ *         description: ID do host responsável pelo intercâmbio
+ *         schema:
+ *           type: integer
+ *       - name: images
+ *         in: formData
+ *         type: array
+ *         items:
+ *           type: file
+ *         description: Imagens do intercâmbio (até 10 arquivos, limite de 5MB por arquivo)
+ *     responses:
+ *       201:
+ *         description: Intercâmbio cadastrado com sucesso
+ *       500:
+ *         description: Erro ao cadastrar intercâmbio
+ */
 const cadastrar = async (req, res) => {
     upload(req, res, async (err) => {
         if (err) {

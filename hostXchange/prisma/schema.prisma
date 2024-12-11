@@ -1,17 +1,26 @@
+// Geração do cliente Prisma, que será usado para interagir com o banco de dados.
 generator client {
   provider = "prisma-client-js"
 }
 
+// Definição da fonte de dados (banco de dados) utilizada no projeto.
+// Utiliza MySQL como banco de dados e a URL de conexão é obtida através da variável de ambiente DATABASE_URL.
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+// Modelo de dados para a entidade "Usuario" (usuário no sistema).
 model Usuario {
+  // ID único do usuário, gerado automaticamente ao ser inserido no banco de dados.
   idusuario Int      @id @default(autoincrement())
+
+  // Data de cadastro do usuário, com valor padrão para o momento de criação.
   dtcadast  DateTime @default(now())
+
+  // Campos para armazenar informações do usuário, como nome, email, senha e outros dados pessoais.
   nome      String?  @db.VarChar(200)
-  email     String?  @unique @db.VarChar(200)
+  email     String?  @unique @db.VarChar(200)  // O campo de email é único.
   sexo      String?  @db.VarChar(40)
   nacionali String?  @db.VarChar(100)
   senha     String?  @db.VarChar(200)
@@ -21,106 +30,164 @@ model Usuario {
   rg        String?  @db.VarChar(20)
   nrpassa   String?  @db.VarChar(20)
   nacional  String?  @db.VarChar(40)
+
+  // Campos para integrar com redes sociais.
   facebook  String?  @db.VarChar(255)
   twitter   String?  @db.VarChar(255)
   instagram String?  @db.VarChar(255)
   linkedin  String?  @db.VarChar(255)
+
+  // Campos para armazenar as fotos de perfil e capa do usuário.
   fotoPerfil String?
   fotoCapa   String?
-  CDRESET   String?  @db.VarChar(6)
-  idhost    Int?     @unique // Campo único para relação 1-1
 
+  // Código de reset de senha (6 caracteres).
+  CDRESET   String?  @db.VarChar(6)
+
+  // Relação com o Host. Se o usuário for um Host, ele terá um "idhost" único.
+  idhost    Int?     @unique
+
+  // Relação com a entidade ContatoHost (uma relação de 1-1). 
+  // Caso o usuário seja um Host, ele será vinculado a esse relacionamento.
   contatoHost ContatoHost? @relation(fields: [idhost], references: [idctt], onDelete: Cascade, onUpdate: Cascade)
 
-  idavaliacao Int? // Referência ao ID da Avaliacao (opcional)
+  // Referência para o ID da avaliação. Cada usuário pode ser avaliado.
+  idavaliacao Int? 
 
-  // Relações bidirecionais com Avaliacao
+  // Relações bidirecionais com a entidade Avaliacao, representando o usuário como avaliador e avaliado.
   avaliacoesComoAvaliado  Avaliacao[] @relation("avaliado_relation")
   avaliacoesComoAvaliador Avaliacao[] @relation("avaliador_relation")
 
-  // Relação biderecional com Match
+  // Relação com a entidade Match, representando intercâmbios aceitos ou realizados.
   matches Match[] @relation("viajante_relation")
 
+  // Índice no banco de dados para melhorar a performance de buscas pelo campo "idhost".
   @@index([idhost], name: "IDHOST_idx")
+
+  // Definição do nome da tabela no banco de dados como "USUARIO".
   @@map("USUARIO")
 }
 
+// Modelo de dados para a entidade "ContatoHost" (informações do anfitrião ou Host).
 model ContatoHost {
+  // ID único do Host.
   idctt     Int @id  @default(autoincrement())
-  nmprop    String?  @db.VarChar(100)
-  endereco  String?  @db.VarChar(100)
-  numero    String?  @db.VarChar(10)
-  complem   String?  @db.VarChar(100)
-  cdestado  String?  @db.VarChar(100)
-  cidade    String?  @db.VarChar(100)
-  nrcep     String?  @db.VarChar(100)
-  nrtel     String?  @db.VarChar(100)
-  tipoProp  String?  @db.VarChar(40)
-  email     String?  @db.VarChar(100)
-  latitude  Float?
-  longitude Float?
-  stcadast  String?  @db.VarChar(10)
-  dtcadast  DateTime @default(now())
 
+  // Informações relacionadas à propriedade oferecida pelo Host.
+  nmprop    String?  @db.VarChar(100)  // Nome da propriedade.
+  endereco  String?  @db.VarChar(100)  // Endereço da propriedade.
+  numero    String?  @db.VarChar(10)
+  complem   String?  @db.VarChar(100)  // Complemento do endereço.
+  cdestado  String?  @db.VarChar(100)  // Código do estado.
+  cidade    String?  @db.VarChar(100)  // Cidade onde a propriedade está localizada.
+  nrcep     String?  @db.VarChar(100)  // CEP da propriedade.
+  nrtel     String?  @db.VarChar(100)  // Número de telefone de contato.
+  tipoProp  String?  @db.VarChar(40)   // Tipo da propriedade (ex: apartamento, casa, etc).
+  email     String?  @db.VarChar(100)  // E-mail de contato do Host.
+  latitude  Float?   // Latitude da localização da propriedade.
+  longitude Float?  // Longitude da localização da propriedade.
+  stcadast  String?  @db.VarChar(10)   // Status de cadastro.
+  dtcadast  DateTime @default(now())   // Data de cadastro do Host.
+
+  // Relação com o modelo Usuario, vinculando um usuário como Host.
   usuario Usuario? @relation
-  
+
+  // Relacionamento com os intercâmbios oferecidos pelo Host.
   intercambio Intercambio[]
 
+  // Definição do nome da tabela no banco de dados como "CONTATO_HOST".
   @@map("CONTATO_HOST")
 }
 
+// Modelo de dados para a entidade "Intercambio" (intercâmbios oferecidos pelos Hosts).
 model Intercambio {
+  // ID único do intercâmbio.
   idinterc   Int    @id @default(autoincrement())
-  nmlocal    String @db.VarChar(150)
-  titulo     String @db.VarChar(200)
-  descricao  String @db.LongText
-  servicos   String @db.VarChar(250)
-  beneficios String @db.VarChar(250)
-  duracao    String @db.VarChar(100)
-  img1       String  // Alterado para String
-  img2       String? // Alterado para String
-  img3       String? // Alterado para String
-  img4       String? // Alterado para String
-  img5       String? // Alterado para String
-  img6       String? // Alterado para String
-  img7       String? // Alterado para String
-  img8       String? // Alterado para String
-  img9       String? // Alterado para String
-  img10      String? // Alterado para String
+
+  // Informações sobre o local e a descrição do intercâmbio.
+  nmlocal    String @db.VarChar(150)  // Nome do local do intercâmbio.
+  titulo     String @db.VarChar(200)  // Título do intercâmbio.
+  descricao  String @db.LongText      // Descrição detalhada do intercâmbio.
+  servicos   String @db.VarChar(250)  // Serviços oferecidos no intercâmbio.
+  beneficios String @db.VarChar(250)  // Benefícios para os viajantes.
+  duracao    String @db.VarChar(100)  // Duração do intercâmbio.
+
+  // Imagens associadas ao intercâmbio (até 10 imagens podem ser fornecidas).
+  img1       String
+  img2       String?
+  img3       String?
+  img4       String?
+  img5       String?
+  img6       String?
+  img7       String?
+  img8       String?
+  img9       String?
+  img10      String?
+
+  // ID do Host que oferece o intercâmbio.
   idhost     Int
 
+  // Relação com o modelo ContatoHost (o Host que oferece o intercâmbio).
   contatoHost ContatoHost @relation(fields: [idhost], references: [idctt], onDelete: Cascade, onUpdate: Cascade)
-  
+
+  // Relação com a entidade Match, indicando quais intercâmbios foram aceitos pelos viajantes.
   matches Match[] @relation("iterc_relation")
 
+  // Índice no banco de dados para melhorar a performance de buscas pelo campo "idhost".
   @@index([idhost], name: "IDHOST_idx")
+
+  // Definição do nome da tabela no banco de dados como "INTERCAMBIOS".
   @@map("INTERCAMBIOS")
 }
 
+// Modelo de dados para a entidade "Avaliacao" (avaliações feitas por usuários).
 model Avaliacao {
+  // ID único da avaliação.
   idavaliacao Int      @id @default(autoincrement())
+
+  // IDs dos usuários envolvidos na avaliação (avaliado e avaliador).
   avaliadoId  Int
   avaliadorId Int
-  avaliacao   Int      @default(0) // Nota da avaliação (ex: 1 a 5)
-  snaval      Boolean? // Sim ou não para algo
-  descricao   String?   @db.Text
-  dtaval      DateTime? @db.Timestamp(6)
-  dtcadast    DateTime @default(now())
 
-  avaliado  Usuario @relation("avaliado_relation" , fields: [avaliadoId] , references: [idusuario], onDelete: Cascade)
+  // Nota da avaliação (de 1 a 5).
+  avaliacao   Int      @default(0)
+
+  // Campo adicional para avaliar algo específico (Sim ou Não).
+  snaval      Boolean?
+
+  // Comentário adicional sobre a avaliação.
+  descricao   String?   @db.Text
+
+  // Data da avaliação.
+  dtaval      DateTime? @db.Timestamp(6)
+  dtcadast    DateTime @default(now())  // Data de cadastro da avaliação.
+
+  // Relações bidirecionais com o modelo Usuario, representando o usuário avaliado e o avaliador.
+  avaliado  Usuario @relation("avaliado_relation", fields: [avaliadoId], references: [idusuario], onDelete: Cascade)
   avaliador Usuario @relation("avaliador_relation", fields: [avaliadorId], references: [idusuario], onDelete: Cascade)
 
+  // Definição do nome da tabela no banco de dados como "AVALIACAO".
   @@map("AVALIACAO")
 }
 
+// Modelo de dados para a entidade "Match" (intercâmbios aceitos pelos viajantes).
 model Match {
+  // ID único do match.
   idmatch    Int      @id @default(autoincrement())
+
+  // IDs dos envolvidos no match (viajante e intercâmbio).
   idviajante Int 
   idinterc   Int 
+
+  // Data em que o match foi realizado.
   dtcria     DateTime @default(now())
-  
+
+  // Relação com o modelo Usuario (viajante que aceitou o intercâmbio).
   viajante Usuario     @relation("viajante_relation", fields: [idviajante], references: [idusuario], onDelete: Cascade)
-  iterc    Intercambio @relation("iterc_relation"   , fields: [idinterc]  , references: [idinterc] , onDelete: Cascade)
-  
+
+  // Relação com o modelo Intercambio (intercâmbio que foi aceito).
+  iterc    Intercambio @relation("iterc_relation", fields: [idinterc], references: [idinterc], onDelete: Cascade)
+
+  // Definição do nome da tabela no banco de dados como "MATCH".
   @@map("MATCH")
 }
