@@ -77,7 +77,7 @@ const prisma = new PrismaClient();
 const login = async (email, callback) => {
   try {
     const user = await prisma.usuario.findUnique({
-      where: { email: email }, include: {contatoHost: { include: { intercambio: true } } }
+      where: { email: email }, include: {contato_host: { include: { intercambios: true } } }
     });
     callback(null, user ? [user] : []);
   } catch (error) {

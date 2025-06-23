@@ -41,7 +41,7 @@ const saltRounds = 10;
  *                     email:
  *                       type: string
  *                       example: "joao.silva@email.com"
- *                     contatoHost:
+ *                     contato_host:
  *                       type: object
  *                       properties:
  *                         nmprop:
@@ -58,7 +58,7 @@ const saltRounds = 10;
 const perfil = async (userId) => {
   try {
     const dados = await prisma.usuario.findUnique({
-      where: { idusuario: parseInt(userId) }, include: { contatoHost: true }
+      where: { idusuario: parseInt(userId) }, include: { contato_host: true }
     });
 
     return { blOk: true, dados };

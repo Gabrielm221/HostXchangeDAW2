@@ -185,7 +185,7 @@ const cadastroUsuario = async (nome, email, password, cpf, rg, sexo, passaporte,
  */
 const cadastroHost = async (nomePropriedade, rua, numero, complemento, cidade, estado, cep, telefone, tipoPropriedade, email, latitude, longitude) => {
   try {
-    const host = await prisma.contatoHost.create({
+    const host = await prisma.contato_host.create({
       data: {
         nmprop   : nomePropriedade,
         endereco : rua,

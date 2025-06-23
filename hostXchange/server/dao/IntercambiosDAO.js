@@ -70,7 +70,7 @@ const fs = require('fs');
  */
 const buscar = async () => {
     try {
-        return await prisma.intercambio.findMany({
+        return await prisma.intercambios.findMany({
             include: {
                 contatoHost: true,
                 contatoHost: {
@@ -175,7 +175,7 @@ const buscar = async () => {
  */
 const buscarPorId = async (id) => {
     try {
-        const intercambio = await prisma.intercambio.findUnique({
+        const intercambio = await prisma.intercambios.findUnique({
             where: { idinterc: Number(id) },
             include: {
                 contatoHost: true,
@@ -275,7 +275,7 @@ const cadastrar = async (dados) => {
             return acc;
         }, {});
 
-        const novoIntercambio = await prisma.intercambio.create({
+        const novoIntercambio = await prisma.intercambios.create({
             data: {
                 nmlocal: "",
                 titulo: dados.titulo,
@@ -337,7 +337,7 @@ const getIntercambioById = async (req, res) => {
     try {
         const { id } = req.body;
 
-        const intercambio = await prisma.intercambio.findUnique({
+        const intercambio = await prisma.intercambios.findUnique({
             where: { idinterc: Number(id) },
             include: {
                 contatoHost: {

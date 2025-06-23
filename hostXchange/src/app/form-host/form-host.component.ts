@@ -223,28 +223,25 @@ export class FormHostComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.formHost.valid) {
-      this.formHost.patchValue({cidade: this.cidadeNome, estado: this.estadoNome});
-      try {
-        // Buscar latitude e longitude
-        const location = await this.getLatLngFromForm();
-  
-        if (location) {
-          // Atualizar o formulário com latitude e longitude
-          this.formHost.patchValue({
-            latitude: location.lat,
-            longitude: location.lng,
-          });
-        } else {
-          console.log('Não foi possível encontrar a localização exata.');
-        }
-      } catch (error) {
-        console.error('Erro ao buscar latitude e longitude:', error);
-      }
+  if (this.formHost.valid) {
+    this.formHost.patchValue({ cidade: this.cidadeNome, estado: this.estadoNome });
+    try {
+      const location = await this.getLatLngFromForm();
+
       let data = this.formHost.value;
-      
+
+      if (location) {
+        data.latitude = location.lat;
+        data.longitude = location.lng;
+      } else {
+        data.latitude = null;
+        data.longitude = null;
+        console.log('Não foi possível encontrar a localização exata.');
+      }
+
       data.idUsuario = localStorage.getItem("id");
-      await this.hostService.enviarFormulario(data).subscribe({
+
+      this.hostService.enviarFormulario(data).subscribe({
         next: (res: any) => {
           if(res.success) {
             console.log('Dados enviados com sucesso!');
@@ -261,11 +258,15 @@ export class FormHostComponent implements OnInit {
           this.toastr.error('Erro ao enviar dados, tente novamente mais tarde! ' + err);
         }
       });
-      
-    } else {
-      this.toastr.warning('Formulário inválido!');
+
+    } catch (error) {
+      console.error('Erro ao buscar latitude e longitude:', error);
+      this.toastr.error('Erro ao buscar latitude e longitude.');
     }
+  } else {
+    this.toastr.warning('Formulário inválido!');
   }
+}
 
 
 }
