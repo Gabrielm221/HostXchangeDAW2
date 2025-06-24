@@ -1,37 +1,5 @@
 const mapaDAO = require('../dao/MapaDAO');
 
-/**
- * @swagger
- * /lista-intercambio:
- *   get:
- *     summary: Buscar lista de intercâmbios
- *     description: Retorna a lista de intercâmbios disponíveis.
- *     operationId: listaIntercambio
- *     responses:
- *       200:
- *         description: Lista de intercâmbios encontrada com sucesso.
- *         schema:
- *           type: object
- *           properties:
- *             blOk:
- *               type: boolean
- *               example: true
- *             data:
- *               type: array
- *               items:
- *                 type: object
- *       500:
- *         description: Erro ao buscar intercâmbios.
- *         schema:
- *           type: object
- *           properties:
- *             blOk:
- *               type: boolean
- *               example: false
- *             message:
- *               type: string
- *               example: 'Erro ao buscar intercâmbio!'
- */
 const listaIntercambio = async (req, res) => {
     try {
         const result = await mapaDAO.listaIntercambio();

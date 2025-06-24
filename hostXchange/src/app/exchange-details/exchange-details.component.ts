@@ -53,9 +53,7 @@ export class ExchangeDetailsComponent implements OnInit {
     private async loadExchangeDetails(id: number): Promise<void> {
         await this.exchangeService.getExchangeById({ id }).subscribe({
             next: (response: any) => {
-                console.log('Detalhes do intercâmbio:', response);
                 this.selectedExchange = response;
-    
                 // Carregar imagens
                 this.images = [
                     response.img1,
@@ -69,8 +67,6 @@ export class ExchangeDetailsComponent implements OnInit {
                     response.img9,
                     response.img10,
                 ].filter((img) => img); // Filtrar imagens não nulas
-    
-                console.log('Host: ', response.idhost);
                 // Carregar avaliações do host
                 this.avaliacoes = response.contatoHost?.usuario?.avaliacoesComoAvaliado || [];
             },
@@ -90,19 +86,19 @@ export class ExchangeDetailsComponent implements OnInit {
     async applyForExchange(): Promise<void> {
         const data = {idviajante: Number(localStorage.getItem("id")), idinterc: this.selectedExchange.idinterc };
         if(data.idviajante === this.selectedExchange.contatoHost.usuario.idusuario) {
-            this.toastr.warning("Você é o host deste intercâmbio e não pode se candidatar!", "ATENÇÃO: ", {positionClass: 'toast-center-center'})
+            this.toastr.warning("Você é o host deste intercâmbio e não pode se candidatar!", "ATENÇÃO: ")
         } else {
             await this.exchangeService.seCandidatar(data).subscribe({
                 next: (res: any) => {
                     if(res.success === true) {
-                        this.toastr.success('Você se candidatou ao intercâmbio com sucesso!', 'PARABÉNS: ', {positionClass: 'toast-center-center'});
+                        this.toastr.success('Você se candidatou ao intercâmbio com sucesso!', 'PARABÉNS: ');
                     } else {
                         this.toastr.success(res.message);
                     }
                 },
                 error: (err) => {
                     console.error('Erro ao carregar detalhes do intercâmbio:', err);
-                    this.toastr.error('Erro ao carregar detalhes do intercâmbio.', 'ERRO: ', {positionClass: 'toast-center-center'});
+                    this.toastr.error('Erro ao carregar detalhes do intercâmbio.', 'ERRO: ');
                 },
             })
         }

@@ -67,7 +67,6 @@ export class FormExchangeComponent implements OnInit {
         }
 
         this.selectedImages = files; // Armazena os arquivos selecionados
-        console.log('Imagens selecionadas:', this.selectedImages.map(file => file.name));
     }
 
     async onSubmit(): Promise<void> {
@@ -98,6 +97,7 @@ export class FormExchangeComponent implements OnInit {
                 next: (res: any) => {
                     if (res.blOk === true) {
                         localStorage.setItem("idHost", "0");
+                        localStorage.setItem("idIntercambio", res.intercambio.idinterc);
                         this.router.navigate(['/home']);
                         this.toastr.success(res.message);
                     } else {

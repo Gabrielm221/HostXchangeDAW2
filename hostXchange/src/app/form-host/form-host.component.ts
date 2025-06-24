@@ -51,8 +51,8 @@ export class FormHostComponent implements OnInit {
       tipoPropriedade: ['', Validators.required],
       telefone       : ['', Validators.required],
       email          : ['', [Validators.email]],
-      latitude       : '',
-      longitude      : ''
+      latitude: [null],
+      longitude: [null],
     });
   }
 
@@ -223,25 +223,28 @@ export class FormHostComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-  if (this.formHost.valid) {
-    this.formHost.patchValue({ cidade: this.cidadeNome, estado: this.estadoNome });
-    try {
-      const location = await this.getLatLngFromForm();
-
-      let data = this.formHost.value;
-
-      if (location) {
-        data.latitude = location.lat;
-        data.longitude = location.lng;
-      } else {
-        data.latitude = null;
-        data.longitude = null;
-        console.log('Não foi possível encontrar a localização exata.');
+    if (this.formHost.valid) {
+      this.formHost.patchValue({cidade: this.cidadeNome, estado: this.estadoNome});
+      try {
+        // Buscar latitude e longitude
+        const location = await this.getLatLngFromForm();
+  
+        if (location) {
+          // Atualizar o formulário com latitude e longitude
+          this.formHost.patchValue({
+            latitude: location.lat,
+            longitude: location.lng,
+          });
+        } else {
+          console.log('Não foi possível encontrar a localização exata.');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar latitude e longitude:', error);
       }
-
+      let data = this.formHost.value;
+      
       data.idUsuario = localStorage.getItem("id");
-
-      this.hostService.enviarFormulario(data).subscribe({
+      await this.hostService.enviarFormulario(data).subscribe({
         next: (res: any) => {
           if(res.success) {
             console.log('Dados enviados com sucesso!');
@@ -258,15 +261,14 @@ export class FormHostComponent implements OnInit {
           this.toastr.error('Erro ao enviar dados, tente novamente mais tarde! ' + err);
         }
       });
-
-    } catch (error) {
-      console.error('Erro ao buscar latitude e longitude:', error);
-      this.toastr.error('Erro ao buscar latitude e longitude.');
+      console.log('Dados enviados para API:', this.formHost.value);
+      console.log('Latitude:', this.formHost.get('latitude')?.value);
+      console.log('Longitude:', this.formHost.get('longitude')?.value);
+      
+    } else {
+      this.toastr.warning('Formulário inválido!');
     }
-  } else {
-    this.toastr.warning('Formulário inválido!');
   }
-}
 
 
 }

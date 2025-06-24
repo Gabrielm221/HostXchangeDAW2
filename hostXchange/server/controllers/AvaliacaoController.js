@@ -1,35 +1,5 @@
 const avaliacaoDAO = require('../dao/AvaliacaoDAO');
 
-/**
- * @swagger
- * /avaliacoes:
- *   post:
- *     summary: Cria uma nova avaliação
- *     tags:
- *       - Avaliações
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               avaliado:
- *                 type: string
- *                 description: ID do usuário avaliado
- *               avaliador:
- *                 type: string
- *                 description: ID do usuário avaliador
- *     responses:
- *       201:
- *         description: Avaliação criada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *       500:
- *         description: Erro ao salvar avaliação
- */
 const criaAvaliacao = async (req, res) => {
     const { avaliado, avaliador } = req.body;
     try {
@@ -42,34 +12,8 @@ const criaAvaliacao = async (req, res) => {
     } catch (error) {
         res.status(500).json({ success: false, message: 'Erro ao salvar avaliação!' });
     }
-};
+}
 
-/**
- * @swagger
- * /avaliacoes:
- *   get:
- *     summary: Lista todas as avaliações de um usuário
- *     tags:
- *       - Avaliações
- *     parameters:
- *       - in: body
- *         name: idUser
- *         schema:
- *           type: object
- *           properties:
- *             idUser:
- *               type: string
- *               description: ID do usuário para buscar as avaliações
- *     responses:
- *       200:
- *         description: Lista de avaliações retornada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *       500:
- *         description: Erro ao listar avaliações
- */
 const listaAvaliacoes = async (req, res) => {
     const { idUser } = req.body;
 
@@ -91,39 +35,6 @@ const listaAvaliacoes = async (req, res) => {
     }
 };
 
-/**
- * @swagger
- * /avaliacoes:
- *   put:
- *     summary: Atualiza uma avaliação existente
- *     tags:
- *       - Avaliações
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               idavaliacao:
- *                 type: string
- *                 description: ID da avaliação a ser atualizada
- *               avaliacao:
- *                 type: number
- *                 description: Nova nota da avaliação
- *               descricao:
- *                 type: string
- *                 description: Nova descrição da avaliação
- *     responses:
- *       200:
- *         description: Avaliação atualizada com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *       500:
- *         description: Erro ao atualizar avaliação
- */
 const atualizaAvaliacao = async (req, res) => {
     const { idavaliacao, avaliacao, descricao } = req.body;
 
